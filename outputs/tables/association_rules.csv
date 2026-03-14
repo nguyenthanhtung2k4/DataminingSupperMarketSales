@@ -1,0 +1,3 @@
+antecedent,consequent,antecedent_size,consequent_size,support,confidence,lift
+Tables,Binders,1,1,0.020253,0.310078,1.193768
+Appliances,Binders,1,1,0.02481,0.272222,1.048029

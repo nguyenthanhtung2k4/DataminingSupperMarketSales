@@ -1,0 +1,19 @@
+column,dtype,missing_count,missing_pct
+Postal Code,float64,11,0.11
+Row ID,int64,0,0.0
+Order ID,object,0,0.0
+Product Name,object,0,0.0
+Sub-Category,object,0,0.0
+Category,object,0,0.0
+Product ID,object,0,0.0
+Region,object,0,0.0
+State,object,0,0.0
+City,object,0,0.0
+Country,object,0,0.0
+Segment,object,0,0.0
+Customer Name,object,0,0.0
+Customer ID,object,0,0.0
+Ship Mode,object,0,0.0
+Ship Date,object,0,0.0
+Order Date,object,0,0.0
+Sales,float64,0,0.0

@@ -1,0 +1,42 @@
+itemset,length,support
+Binders,1,0.259747
+Paper,1,0.240506
+Furnishings,1,0.174177
+Phones,1,0.163038
+Storage,1,0.156456
+Accessories,1,0.152911
+Art,1,0.149873
+Chairs,1,0.111899
+Appliances,1,0.091139
+Labels,1,0.073418
+Tables,1,0.065316
+Envelopes,1,0.047595
+Fasteners,1,0.043544
+Bookcases,1,0.04
+Supplies,1,0.03038
+Machines,1,0.023797
+"Binders, Paper",2,0.052658
+"Binders, Phones",2,0.042025
+"Binders, Furnishings",2,0.038481
+"Binders, Storage",2,0.037975
+"Accessories, Binders",2,0.035949
+"Paper, Phones",2,0.033924
+"Furnishings, Paper",2,0.032911
+"Art, Paper",2,0.032405
+"Furnishings, Phones",2,0.031392
+"Accessories, Paper",2,0.030886
+"Art, Binders",2,0.029873
+"Paper, Storage",2,0.029873
+"Accessories, Phones",2,0.026835
+"Chairs, Paper",2,0.026835
+"Furnishings, Storage",2,0.026329
+"Art, Phones",2,0.025823
+"Accessories, Storage",2,0.02481
+"Appliances, Binders",2,0.02481
+"Art, Furnishings",2,0.022785
+"Art, Storage",2,0.022278
+"Appliances, Paper",2,0.021772
+"Binders, Chairs",2,0.021772
+"Phones, Storage",2,0.021266
+"Accessories, Furnishings",2,0.021266
+"Binders, Tables",2,0.020253
