@@ -1,53 +1,53 @@
 # DataminingSupperMarketSales
 
-Phan tich doanh so sieu thi theo huong Data Mining voi 3 nhanh chinh:
+Phân tích doanh số siêu thị theo hướng Data Mining với 3 nhánh chính:
 
-- khai pha gio hang de tim co-hoi cross-sell / up-sell
-- phan cum khach hang de xay dung chan dung mua sam
-- du bao doanh so theo thoi gian de so sanh cac mo hinh forecast
+- khai phá giỏ hàng để tìm cơ hội `cross-sell / up-sell`
+- phân cụm khách hàng để xây dựng chân dung mua sắm
+- dự báo doanh số theo thời gian để so sánh các mô hình forecast
 
-Dataset du kien: `train.csv` tu Kaggle `rohitsahoo/sales-forecasting`.
+Dataset dự kiến: `train.csv` từ Kaggle `rohitsahoo/sales-forecasting`.
 
-## Final Output
+## Kết Quả Cuối Cùng
 
-Repo sau khi chay xong se sinh ra:
+Sau khi chạy xong, repo sẽ sinh ra:
 
-- du lieu da xu ly trong `data/processed/`
-- bang top association rules, bang so sanh clustering, bang so sanh forecasting
-- hinh ve, bang metric va artifact trong `outputs/`
-- file log ket qua de so sanh cac lan chay:
+- dữ liệu đã xử lý trong `data/processed/`
+- bảng top `association rules`, bảng so sánh `clustering`, bảng so sánh `forecasting`
+- hình vẽ, bảng metric và các artifact trong `outputs/`
+- file log kết quả để so sánh các lần chạy:
   - `outputs/reports/RESULTS_LOG.md`
   - `outputs/reports/results_registry.csv`
   - `outputs/logs/run_<timestamp>.json`
   - `outputs/logs/best_runs_summary.md`
-- bo notebook `01 -> 05` de trinh bay pipeline va viet bao cao
+- bộ notebook `01 -> 05` để trình bày pipeline và viết báo cáo
 
-## Cau Truc Chinh
+## Cấu Trúc Chính
 
-- `configs/params.yaml`: tham so va duong dan can chinh truoc khi chay
-- `docs/`: huong dan chi tiet, data dictionary, tuning guide, experiment policy
-- `notebooks/`: notebook bao cao theo dung thu tu pipeline
-- `src/`: code chinh cua du an
-- `scripts/`: script chay pipeline, notebook va xuat ket qua
-- `outputs/`: artifacts, log, bang metric, bao cao
+- `configs/params.yaml`: tham số và đường dẫn cần chỉnh trước khi chạy
+- `docs/`: hướng dẫn chi tiết, data dictionary, tuning guide, experiment policy
+- `notebooks/`: notebook báo cáo theo đúng thứ tự pipeline
+- `src/`: code chính của dự án
+- `scripts/`: script chạy pipeline, notebook và xuất kết quả
+- `outputs/`: artifacts, log, bảng metric, báo cáo
 
-## Cach Chay Nhanh
+## Cách Chạy Nhanh
 
-1. Tai dataset va dat file vao `data/raw/train.csv`.
-2. Mo `configs/params.yaml` va kiem tra lai ten cot neu version dataset khac.
-3. Tao virtual environment de tranh xung dot moi truong:
+1. Tải dataset và đặt file vào `data/raw/train.csv`.
+2. Mở `configs/params.yaml` và kiểm tra lại tên cột nếu version dataset khác.
+3. Tạo virtual environment để tránh xung đột môi trường:
 
 ```bash
 python -m venv .venv
 ```
 
-Neu may cua ban dung `python3` thay vi `python`, hay dung:
+Nếu máy của bạn dùng `python3` thay vì `python`, hãy dùng:
 
 ```bash
 python3 -m venv .venv
 ```
 
-4. Kich hoat virtual environment tuy theo he dieu hanh:
+4. Kích hoạt virtual environment tùy theo hệ điều hành:
 
 Windows PowerShell:
 
@@ -68,51 +68,51 @@ Linux / macOS / WSL / Git Bash:
 source .venv/bin/activate
 ```
 
-Sau khi kich hoat thanh cong, ban se thay `(.venv)` o dau dong lenh.
+Sau khi kích hoạt thành công, bạn sẽ thấy `(.venv)` ở đầu dòng lệnh.
 
-5. Cai thu vien:
+5. Cài thư viện:
 
 ```bash
 python -m pip install -r requirements.txt
 ```
 
-Neu dang dung `python3`, co the dung:
+Nếu đang dùng `python3`, có thể dùng:
 
 ```bash
 python3 -m pip install -r requirements.txt
 ```
 
-6. Chay pipeline bang code:
+6. Chạy pipeline bằng code:
 
 ```bash
 python scripts/run_pipeline.py
 ```
 
-Hoac neu may ban dung `python3`:
+Hoặc nếu máy bạn dùng `python3`:
 
 ```bash
 python3 scripts/run_pipeline.py
 ```
 
-7. Hoac chay lai toan bo notebook:
+7. Hoặc chạy lại toàn bộ notebook:
 
 ```bash
 python scripts/run_papermill.py
 ```
 
-Hoac:
+Hoặc:
 
 ```bash
 python3 scripts/run_papermill.py
 ```
 
-8. Khi muon thoat khoi virtual environment:
+8. Khi muốn thoát khỏi virtual environment:
 
 ```bash
 deactivate
 ```
 
-## Truoc Khi Chay Can Sua Gi
+## Trước Khi Chạy Cần Sửa Gì
 
 - `configs/params.yaml`
   - `paths.raw_data`
@@ -122,7 +122,7 @@ deactivate
   - `clustering`
   - `forecasting`
 
-Tai lieu chi tiet:
+Tài liệu chi tiết:
 
 - [project_focus.md](docs/project_focus.md)
 - [data_dictionary.md](docs/data_dictionary.md)
@@ -130,8 +130,8 @@ Tai lieu chi tiet:
 - [tuning_guide.md](docs/tuning_guide.md)
 - [experiment_policy.md](docs/experiment_policy.md)
 
-## Ghi Chu
+## Ghi Chú
 
-- Code chinh nam trong `src/`, notebook chi goi ham va trinh bay ket qua.
-- Repo uu tien reproducible va so sanh phuong phap de phuc vu cham diem va viet bao cao.
-- Neu schema dataset khac voi phien ban mac dinh, hay cap nhat `configs/params.yaml` truoc khi chay.
+- Code chính nằm trong `src/`, notebook chỉ gọi hàm và trình bày kết quả.
+- Repo ưu tiên `reproducible` và so sánh phương pháp để phục vụ chấm điểm và viết báo cáo.
+- Nếu schema dataset khác với phiên bản mặc định, hãy cập nhật `configs/params.yaml` trước khi chạy.
