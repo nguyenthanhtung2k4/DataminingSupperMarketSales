@@ -1,3 +1,13 @@
 antecedent,consequent,antecedent_size,consequent_size,support,confidence,lift
 Tables,Binders,1,1,0.020253,0.310078,1.193768
+Binders,Tables,1,1,0.020253,0.077973,1.193768
+Phones,Furnishings,1,1,0.031392,0.192547,1.105464
+Furnishings,Phones,1,1,0.031392,0.180233,1.105464
+Accessories,Phones,1,1,0.026835,0.175497,1.076416
+Phones,Accessories,1,1,0.026835,0.164596,1.076416
+Art,Phones,1,1,0.025823,0.172297,1.056792
+Phones,Art,1,1,0.025823,0.158385,1.056792
 Appliances,Binders,1,1,0.02481,0.272222,1.048029
+Binders,Appliances,1,1,0.02481,0.095517,1.048029
+Accessories,Storage,1,1,0.02481,0.162252,1.037045
+Storage,Accessories,1,1,0.02481,0.158576,1.037045

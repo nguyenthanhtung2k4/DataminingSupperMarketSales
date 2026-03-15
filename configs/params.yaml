@@ -64,7 +64,7 @@
   },
   "association": {
     "min_support": 0.02,
-    "min_confidence": 0.2,
+    "min_confidence": 0.02,
     "min_lift": 1.0,
     "max_length": 3,
     "top_n_rules": 20

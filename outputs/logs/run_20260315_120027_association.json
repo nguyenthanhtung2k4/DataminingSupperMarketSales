@@ -1,0 +1,27 @@
+{
+  "run_id": "association-20260315-120027",
+  "run_time": "2026-03-15 12:00:27",
+  "task": "association",
+  "dataset_version": "train.csv|2129689B|2020-09-11 15:40:16",
+  "code_version": "7bbf7b8",
+  "split_strategy": "basket grouped by Order ID",
+  "metrics": {
+    "rule_count": 12,
+    "max_lift": 1.193768,
+    "avg_lift_top5": 1.134976
+  },
+  "key_params": {
+    "min_support": 0.02,
+    "min_confidence": 0.02,
+    "min_lift": 1.0,
+    "max_length": 3,
+    "top_n_rules": 20
+  },
+  "output_paths": {
+    "itemsets": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\tables\\association_itemsets.csv",
+    "rules": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\tables\\association_rules.csv",
+    "top_categories_figure": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\figures\\top_subcategories.png"
+  },
+  "notes": "Association rules over basket transactions using configured item level.",
+  "conclusion": "kem hon"
+}

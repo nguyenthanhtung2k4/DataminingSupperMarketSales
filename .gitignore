@@ -13,10 +13,11 @@ Thumbs.db
 venv/
 env/
 
-data/raw/*
 !data/raw/README.md
 
+!data/raw/*
 data/processed/*
+
 !data/processed/README.md
 
 outputs/figures/*.png
