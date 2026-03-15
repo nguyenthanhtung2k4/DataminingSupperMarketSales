@@ -1,0 +1,4 @@
+Task,Selected Parameters
+Association,"{""min_support"": 0.01, ""min_confidence"": 0.02, ""min_lift"": 1.0, ""max_length"": 3, ""top_n_rules"": 10}"
+Clustering,"{""features"": [""recency_days"", ""order_count"", ""total_sales"", ""unique_subcategories"", ""total_quantity""], ""algorithms"": [""kmeans"", ""agglomerative""], ""candidate_k"": [2, 3, 4, 5, 6]}"
+Forecasting,"{""frequency"": ""MS"", ""target_column"": ""Sales"", ""horizon"": 6, ""moving_average_window"": 3, ""holt_winters"": {""trend"": ""add"", ""seasonal"": ""add"", ""seasonal_periods"": 12}, ""sarimax"": {""order"": [1, 1, 1], ""seasonal_order"": [1, 0, 0, 12]}}"

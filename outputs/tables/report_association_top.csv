@@ -1,0 +1,9 @@
+Antecedent,Consequent,Support,Confidence,Lift
+"Binders, Paper",Storage,0.0106,0.1948,1.2547
+Storage,"Binders, Paper",0.0106,0.0681,1.2547
+"Binders, Paper",Phones,0.0108,0.1985,1.2167
+Phones,"Binders, Paper",0.0108,0.066,1.2167
+"Paper, Phones",Binders,0.0108,0.3136,1.1957
+Binders,"Paper, Phones",0.0108,0.0411,1.1957
+"Binders, Phones",Paper,0.0108,0.2718,1.1503
+Paper,"Binders, Phones",0.0108,0.0456,1.1503

@@ -13,7 +13,13 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from src.config import ensure_output_directories, load_params, resolve_path
 from src.data import clean_sales_data, load_raw_data, schema_snapshot
-from src.evaluation import export_tracking_summary, log_experiment, write_dataframe
+from src.evaluation import (
+    export_report_tables,
+    export_tracking_summary,
+    generate_report_tex,
+    log_experiment,
+    write_dataframe,
+)
 from src.features import build_basket_transactions, build_customer_features, build_weekly_sales
 from src.mining import mine_association_rules, run_customer_clustering
 from src.models import run_forecasting_experiment
@@ -161,6 +167,8 @@ def run_pipeline(config_path: str | None = None, check_only: bool = False) -> No
     )
 
     export_tracking_summary(config, PROJECT_ROOT)
+    export_report_tables(config, PROJECT_ROOT)
+    generate_report_tex(config, PROJECT_ROOT)
     print("Pipeline completed successfully.")
 
 

@@ -29,6 +29,7 @@ def _clean_string_columns(df: pd.DataFrame) -> pd.DataFrame:
 def clean_sales_data(df: pd.DataFrame, config: dict[str, Any]) -> tuple[pd.DataFrame, dict[str, int]]:
     working = df.copy()
     raw_rows = len(working)
+    dayfirst = bool(config.get("preprocessing", {}).get("date_dayfirst", False))
 
     if config["preprocessing"]["drop_duplicate_rows"]:
         working = working.drop_duplicates()
@@ -36,11 +37,11 @@ def clean_sales_data(df: pd.DataFrame, config: dict[str, Any]) -> tuple[pd.DataF
 
     working = _clean_string_columns(working)
 
-    working["Order Date"] = pd.to_datetime(working["Order Date"], errors="coerce")
+    working["Order Date"] = pd.to_datetime(working["Order Date"], errors="coerce", dayfirst=dayfirst)
     invalid_date_rows = int(working["Order Date"].isna().sum())
 
     if "Ship Date" in working.columns:
-        working["Ship Date"] = pd.to_datetime(working["Ship Date"], errors="coerce")
+        working["Ship Date"] = pd.to_datetime(working["Ship Date"], errors="coerce", dayfirst=dayfirst)
 
     numeric_defaults = {"Sales": 0.0, "Quantity": 1.0, "Discount": 0.0, "Profit": 0.0}
     for column in ["Sales", "Quantity", "Discount", "Profit"]:

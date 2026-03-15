@@ -8,13 +8,17 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.config import load_params
-from src.evaluation import export_tracking_summary
+from src.evaluation import export_report_tables, export_tracking_summary, generate_report_tex
 
 
 def main() -> None:
     config = load_params()
     summary_path = export_tracking_summary(config, PROJECT_ROOT)
+    report_tables = export_report_tables(config, PROJECT_ROOT)
+    report_tex = generate_report_tex(config, PROJECT_ROOT)
     print(f"Updated summary: {summary_path}")
+    print(f"Updated report tables: {len(report_tables)} files")
+    print(f"Updated LaTeX report: {report_tex}")
 
 
 if __name__ == "__main__":

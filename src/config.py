@@ -19,6 +19,12 @@ def load_params(config_path: str | Path | None = None) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def save_params(config: dict[str, Any], config_path: str | Path | None = None) -> Path:
+    path = Path(config_path) if config_path else PROJECT_ROOT / "configs" / "params.yaml"
+    path.write_text(json.dumps(config, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    return path
+
+
 def resolve_path(path_value: str | Path, project_root: str | Path | None = None) -> Path:
     base = Path(project_root) if project_root else PROJECT_ROOT
     path = Path(path_value)
@@ -53,4 +59,3 @@ def detect_dataset_version(data_path: str | Path) -> str:
     stat = path.stat()
     modified = datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M:%S")
     return f"{path.name}|{stat.st_size}B|{modified}"
-

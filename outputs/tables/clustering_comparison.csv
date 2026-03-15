@@ -1,11 +1,7 @@
-algorithm,k,silhouette,davies_bouldin
-kmeans,2,0.3559298191397193,1.2056361544083543
-kmeans,3,0.3440991645158732,1.0535480991022863
-kmeans,5,0.3311872967401664,0.8477404330072151
-kmeans,4,0.3291607513287111,1.0102581203942462
-kmeans,6,0.2647971779750698,1.009021131954624
-agglomerative,3,0.26275703541505374,1.2419641825615313
-agglomerative,2,0.25934906639519795,1.369694862677291
-agglomerative,4,0.2159934786672218,1.077969690803004
-agglomerative,6,0.2051727404404294,0.9862253292485436
-agglomerative,5,0.20125332841874877,1.1586897846770998
+algorithm,k,silhouette,davies_bouldin,min_cluster_share,max_cluster_share,accepted_for_report,feature_count,features
+kmeans,2,0.3554244951504289,1.067923078846253,0.4501891551071879,0.5498108448928121,True,5,"recency_days, order_count, total_sales, unique_subcategories, total_quantity"
+kmeans,3,0.3275922531446389,1.023575527432894,0.12988650693568726,0.48045397225725095,True,5,"recency_days, order_count, total_sales, unique_subcategories, total_quantity"
+agglomerative,2,0.30186736374523704,1.1722595877501392,0.36317780580075665,0.6368221941992434,True,5,"recency_days, order_count, total_sales, unique_subcategories, total_quantity"
+kmeans,4,0.2892625908191413,1.1841052856086138,0.11979823455233292,0.39344262295081966,True,5,"recency_days, order_count, total_sales, unique_subcategories, total_quantity"
+agglomerative,3,0.24429722224639303,1.2664600866553277,0.16393442622950818,0.4728877679697352,True,5,"recency_days, order_count, total_sales, unique_subcategories, total_quantity"
+agglomerative,4,0.2393731885246775,1.1451751912910408,0.12610340479192939,0.4728877679697352,True,5,"recency_days, order_count, total_sales, unique_subcategories, total_quantity"

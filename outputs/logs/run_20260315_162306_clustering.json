@@ -1,0 +1,42 @@
+{
+  "run_id": "clustering-20260315-162306",
+  "run_time": "2026-03-15 16:23:06",
+  "task": "clustering",
+  "dataset_version": "train.csv|2129689B|2026-03-15 12:07:33",
+  "code_version": "6808127",
+  "split_strategy": "customer-level aggregation from cleaned transactional data",
+  "metrics": {
+    "silhouette": 0.3554244951504289,
+    "davies_bouldin": 1.067923078846253,
+    "best_k": 2
+  },
+  "key_params": {
+    "features": [
+      "recency_days",
+      "order_count",
+      "total_sales",
+      "unique_subcategories",
+      "total_quantity"
+    ],
+    "algorithms": [
+      "kmeans",
+      "agglomerative"
+    ],
+    "candidate_k": [
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "best_algorithm": "kmeans"
+  },
+  "output_paths": {
+    "comparison": "/hdd3/nckh-AIAgent/tungtt/Datamining/DataminingSupperMarketSales/outputs/tables/clustering_comparison.csv",
+    "assignments": "/hdd3/nckh-AIAgent/tungtt/Datamining/DataminingSupperMarketSales/outputs/tables/cluster_assignments.csv",
+    "profile": "/hdd3/nckh-AIAgent/tungtt/Datamining/DataminingSupperMarketSales/outputs/tables/cluster_profile.csv",
+    "profile_figure": "/hdd3/nckh-AIAgent/tungtt/Datamining/DataminingSupperMarketSales/outputs/figures/cluster_profile.png"
+  },
+  "notes": "Customer clustering benchmark across KMeans and Agglomerative.",
+  "conclusion": "kem hon"
+}
