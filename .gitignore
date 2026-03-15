@@ -13,6 +13,8 @@ Thumbs.db
 venv/
 env/
 
+report.tex*
+
 !data/raw/README.md
 
 !data/raw/*

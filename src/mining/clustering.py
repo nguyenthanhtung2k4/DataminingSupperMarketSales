@@ -29,6 +29,13 @@ def run_customer_clustering(
         raise ValueError("Not enough clustering features available to run clustering.")
 
     modeling_frame = customer_features[feature_columns].fillna(0.0)
+    feature_columns = [
+        column for column in feature_columns if modeling_frame[column].nunique(dropna=False) > 1
+    ]
+    if len(feature_columns) < 2:
+        raise ValueError("Not enough non-constant clustering features available to run clustering.")
+
+    modeling_frame = modeling_frame[feature_columns]
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(modeling_frame)
 
@@ -41,12 +48,20 @@ def run_customer_clustering(
             labels = _fit_model(algorithm, k, X_scaled, seed)
             if len(np.unique(labels)) < 2:
                 continue
+            cluster_shares = pd.Series(labels).value_counts(normalize=True)
             results.append(
                 {
                     "algorithm": algorithm,
                     "k": int(k),
                     "silhouette": float(silhouette_score(X_scaled, labels)),
                     "davies_bouldin": float(davies_bouldin_score(X_scaled, labels)),
+                    "min_cluster_share": float(cluster_shares.min()),
+                    "max_cluster_share": float(cluster_shares.max()),
+                    "accepted_for_report": bool(
+                        cluster_shares.min() >= 0.05 and cluster_shares.max() <= 0.75
+                    ),
+                    "feature_count": int(len(feature_columns)),
+                    "features": ", ".join(feature_columns),
                 }
             )
 
@@ -54,8 +69,11 @@ def run_customer_clustering(
     if comparison_df.empty:
         raise ValueError("No valid clustering result was produced.")
 
-    comparison_df = comparison_df.sort_values(
-        ["silhouette", "davies_bouldin"], ascending=[False, True]
+    accepted_df = comparison_df[comparison_df["accepted_for_report"]].copy()
+    ranking_source = accepted_df if not accepted_df.empty else comparison_df
+    comparison_df = ranking_source.sort_values(
+        ["silhouette", "davies_bouldin", "max_cluster_share"],
+        ascending=[False, True, True],
     ).reset_index(drop=True)
     best = comparison_df.iloc[0]
 
@@ -72,6 +90,8 @@ def run_customer_clustering(
             recency_days=("recency_days", "mean"),
             order_count=("order_count", "mean"),
             unique_subcategories=("unique_subcategories", "mean"),
+            total_quantity=("total_quantity", "mean"),
+            active_days=("active_days", "mean"),
             avg_discount=("avg_discount", "mean"),
             profit_margin=("profit_margin", "mean"),
         )

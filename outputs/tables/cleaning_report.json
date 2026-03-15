@@ -1,7 +1,7 @@
 {
   "raw_rows": 9800,
   "duplicate_rows_removed": 0,
-  "invalid_date_rows": 5841,
-  "missing_core_rows": 5841,
-  "final_rows": 3959
+  "invalid_date_rows": 0,
+  "missing_core_rows": 0,
+  "final_rows": 9800
 }

@@ -1,0 +1,46 @@
+{
+  "run_id": "forecasting-20260315-162151",
+  "run_time": "2026-03-15 16:21:51",
+  "task": "forecasting",
+  "dataset_version": "train.csv|2129689B|2026-03-15 12:07:33",
+  "code_version": "6808127",
+  "split_strategy": "time-based split with holdout horizon=6",
+  "metrics": {
+    "MAE": 13133.564803,
+    "RMSE": 18419.983394,
+    "sMAPE": 18.725375
+  },
+  "key_params": {
+    "frequency": "MS",
+    "horizon": 6,
+    "moving_average_window": 3,
+    "holt_winters": {
+      "trend": "add",
+      "seasonal": "add",
+      "seasonal_periods": 12
+    },
+    "sarimax": {
+      "order": [
+        1,
+        1,
+        1
+      ],
+      "seasonal_order": [
+        1,
+        0,
+        0,
+        12
+      ]
+    },
+    "best_model": "holt_winters"
+  },
+  "output_paths": {
+    "comparison": "/hdd3/nckh-AIAgent/tungtt/Datamining/DataminingSupperMarketSales/outputs/tables/forecast_comparison.csv",
+    "predictions": "/hdd3/nckh-AIAgent/tungtt/Datamining/DataminingSupperMarketSales/outputs/tables/forecast_predictions.csv",
+    "residuals": "/hdd3/nckh-AIAgent/tungtt/Datamining/DataminingSupperMarketSales/outputs/tables/forecast_residuals.csv",
+    "forecast_figure": "/hdd3/nckh-AIAgent/tungtt/Datamining/DataminingSupperMarketSales/outputs/figures/forecast_vs_actual.png",
+    "weekly_sales_figure": "/hdd3/nckh-AIAgent/tungtt/Datamining/DataminingSupperMarketSales/outputs/figures/weekly_sales.png"
+  },
+  "notes": "Forecasting comparison across naive, moving average, Holt-Winters, and SARIMAX.",
+  "conclusion": "tot hon"
+}

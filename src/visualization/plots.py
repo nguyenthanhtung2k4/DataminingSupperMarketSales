@@ -22,8 +22,8 @@ def _save_current_figure(output_path: str | Path) -> Path:
 def plot_sales_over_time(ts_df: pd.DataFrame, output_path: str | Path) -> Path:
     plt.figure(figsize=(12, 5))
     plt.plot(ts_df["ds"], ts_df["y"], color="#1f77b4", linewidth=2)
-    plt.title("Weekly Sales Over Time")
-    plt.xlabel("Week")
+    plt.title("Sales Over Time")
+    plt.xlabel("Date")
     plt.ylabel("Sales")
     return _save_current_figure(output_path)
 
@@ -69,7 +69,7 @@ def plot_forecast(prediction_df: pd.DataFrame, output_path: str | Path) -> Path:
             continue
         plt.plot(prediction_df["ds"], prediction_df[column], label=column, linewidth=1.5)
     plt.title("Forecast vs Actual")
-    plt.xlabel("Week")
+    plt.xlabel("Date")
     plt.ylabel("Sales")
     plt.legend()
     return _save_current_figure(output_path)

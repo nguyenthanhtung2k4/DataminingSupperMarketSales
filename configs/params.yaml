@@ -32,69 +32,141 @@
       "Profit"
     ],
     "column_aliases": {
-      "Row ID": ["row id", "row_id", "rowid"],
-      "Order ID": ["order id", "order_id"],
-      "Order Date": ["order date", "order_date"],
-      "Ship Date": ["ship date", "ship_date"],
-      "Ship Mode": ["ship mode", "ship_mode"],
-      "Customer ID": ["customer id", "customer_id"],
-      "Customer Name": ["customer name", "customer_name"],
-      "Segment": ["segment"],
-      "Country": ["country"],
-      "City": ["city"],
-      "State": ["state"],
-      "Postal Code": ["postal code", "postal_code"],
-      "Region": ["region"],
-      "Product ID": ["product id", "product_id"],
-      "Category": ["category"],
-      "Sub-Category": ["sub-category", "sub_category", "subcategory"],
-      "Product Name": ["product name", "product_name"],
-      "Sales": ["sales"],
-      "Quantity": ["quantity"],
-      "Discount": ["discount"],
-      "Profit": ["profit"]
+      "Row ID": [
+        "row id",
+        "row_id",
+        "rowid"
+      ],
+      "Order ID": [
+        "order id",
+        "order_id"
+      ],
+      "Order Date": [
+        "order date",
+        "order_date"
+      ],
+      "Ship Date": [
+        "ship date",
+        "ship_date"
+      ],
+      "Ship Mode": [
+        "ship mode",
+        "ship_mode"
+      ],
+      "Customer ID": [
+        "customer id",
+        "customer_id"
+      ],
+      "Customer Name": [
+        "customer name",
+        "customer_name"
+      ],
+      "Segment": [
+        "segment"
+      ],
+      "Country": [
+        "country"
+      ],
+      "City": [
+        "city"
+      ],
+      "State": [
+        "state"
+      ],
+      "Postal Code": [
+        "postal code",
+        "postal_code"
+      ],
+      "Region": [
+        "region"
+      ],
+      "Product ID": [
+        "product id",
+        "product_id"
+      ],
+      "Category": [
+        "category"
+      ],
+      "Sub-Category": [
+        "sub-category",
+        "sub_category",
+        "subcategory"
+      ],
+      "Product Name": [
+        "product name",
+        "product_name"
+      ],
+      "Sales": [
+        "sales"
+      ],
+      "Quantity": [
+        "quantity"
+      ],
+      "Discount": [
+        "discount"
+      ],
+      "Profit": [
+        "profit"
+      ]
     }
   },
   "preprocessing": {
     "drop_duplicate_rows": true,
     "fill_numeric_missing_with_zero": true,
     "clip_negative_sales": false,
+    "date_dayfirst": true,
     "basket_item_level": "Sub-Category",
     "resample_frequency": "W-MON"
   },
   "association": {
-    "min_support": 0.02,
+    "min_support": 0.01,
     "min_confidence": 0.02,
     "min_lift": 1.0,
     "max_length": 3,
-    "top_n_rules": 20
+    "top_n_rules": 10
   },
   "clustering": {
-    "candidate_k": [2, 3, 4, 5, 6],
+    "candidate_k": [
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
     "features": [
       "recency_days",
       "order_count",
       "total_sales",
-      "avg_order_value",
       "unique_subcategories",
-      "avg_discount",
-      "profit_margin"
+      "total_quantity"
     ],
-    "algorithms": ["kmeans", "agglomerative"]
+    "algorithms": [
+      "kmeans",
+      "agglomerative"
+    ]
   },
   "forecasting": {
-    "frequency": "W-MON",
+    "frequency": "MS",
     "target_column": "Sales",
-    "horizon": 12,
-    "moving_average_window": 4,
+    "horizon": 6,
+    "moving_average_window": 3,
     "holt_winters": {
       "trend": "add",
       "seasonal": "add",
-      "seasonal_periods": 4
+      "seasonal_periods": 12
     },
     "sarimax": {
-      "order": [1, 1, 1],
-      "seasonal_order": [1, 0, 0, 4]
+      "order": [
+        1,
+        1,
+        1
+      ],
+      "seasonal_order": [
+        1,
+        0,
+        0,
+        12
+      ]
     }
   }
 }
