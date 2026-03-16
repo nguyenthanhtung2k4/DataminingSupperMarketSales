@@ -11,7 +11,3 @@ Thu muc nay chua cac hinh duoc sinh chu yeu boi `python scripts/run_pipeline.py`
 - `forecast_vs_actual.png`: so sanh du bao voi gia tri thuc te
 - `forecast_residuals.png`: residual cua model forecast
 
-## Ghi chu
-
-- Khong can `run_papermill.py` de co cac hinh nay.
-- `run_papermill.py` chi su dung lai cac hinh da duoc sinh boi pipeline.
