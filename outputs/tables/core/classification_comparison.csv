@@ -1,0 +1,4 @@
+model,accuracy,f1_macro,f1_weighted,roc_auc_ovr,params
+logistic_regression,0.386935,0.369547,0.396632,0.548107,"{'C': 10.0, 'class_weight': 'balanced'}"
+decision_tree,0.427136,0.34654,0.407274,0.515597,"{'max_depth': 5, 'min_samples_leaf': 3, 'class_weight': 'balanced'}"
+random_forest,0.432161,0.327754,0.403686,0.491491,"{'n_estimators': 100, 'max_depth': None, 'min_samples_leaf': 3, 'class_weight': 'balanced'}"

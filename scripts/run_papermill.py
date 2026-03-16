@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -11,7 +10,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.config import ensure_output_directories, load_params, resolve_path
+from src.config import ensure_output_directories, load_params
 from src.data import load_raw_data
 
 
@@ -30,15 +29,18 @@ def main() -> None:
     load_raw_data(config, PROJECT_ROOT)
     subprocess.run([sys.executable, str(PROJECT_ROOT / "scripts" / "run_pipeline.py")], check=True)
 
-    reports_dir = resolve_path(config["paths"]["reports_dir"], PROJECT_ROOT)
     notebooks_dir = PROJECT_ROOT / "notebooks"
-    os.chdir(PROJECT_ROOT)
+    reports_dir = PROJECT_ROOT / "outputs" / "reports"
+
+    for old_executed in reports_dir.glob("executed_*.ipynb"):
+        old_executed.unlink()
 
     for notebook_name in NOTEBOOKS:
         input_path = notebooks_dir / notebook_name
-        output_path = reports_dir / f"executed_{notebook_name}"
-        pm.execute_notebook(str(input_path), str(output_path))
-        print(f"Executed {notebook_name} -> {output_path}")
+        temp_path = notebooks_dir / f".papermill_tmp_{notebook_name}"
+        pm.execute_notebook(str(input_path), str(temp_path), cwd=str(PROJECT_ROOT))
+        temp_path.replace(input_path)
+        print(f"Executed {notebook_name} -> {input_path}")
 
 
 if __name__ == "__main__":

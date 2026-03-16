@@ -1,0 +1,42 @@
+\chapter{Kết luận và hướng phát triển }\label{chapter_conclusion}
+
+\section{Kết quả đạt được}
+
+Đề tài đã xây dựng được một pipeline khai phá dữ liệu hoàn chỉnh cho bài toán phân tích doanh số siêu thị. Toàn bộ quy trình từ làm sạch dữ liệu, xây dựng đặc trưng, mô hình hóa đến đánh giá đều được tổ chức lại theo hướng có thể tái lập bằng script và notebook.
+
+Bốn nhánh bắt buộc của đề tài đã được triển khai đầy đủ:
+\begin{itemize}
+\item Luật kết hợp để tìm các nhóm sản phẩm thường được mua cùng nhau.
+\item Phân cụm khách hàng để nhận diện các nhóm hành vi mua sắm khác nhau.
+\item Phân lớp phân khúc khách hàng dựa trên nhãn \texttt{Segment}.
+\item Dự báo doanh số theo thời gian với baseline và mô hình nâng cao.
+\end{itemize}
+
+Về mặt kết quả, pipeline cho thấy:
+\begin{itemize}
+\item Luật kết hợp nổi bật nhất xoay quanh các nhóm \texttt{Binders}, \texttt{Paper}, \texttt{Storage} và \texttt{Phones}.
+\item KMeans với 4 cụm là phương án phân cụm phù hợp nhất cho tập dữ liệu hiện tại.
+\item Logistic Regression là mô hình phân lớp tốt nhất khi ưu tiên F1 Macro.
+\item Holt-Winters là mô hình dự báo tốt nhất trong lần chạy cuối với \texttt{sMAPE = 18.7254}.
+\end{itemize}
+
+\section{Hạn chế}
+
+Bên cạnh các kết quả đạt được, đề tài còn một số hạn chế cần ghi nhận:
+\begin{itemize}
+\item Dữ liệu raw không có các cột \texttt{Profit}, \texttt{Discount} và \texttt{Quantity}, do đó chưa thể khai thác sâu các góc nhìn về lợi nhuận, chiết khấu và lượng bán.
+\item Bài toán phân lớp còn có hiện tượng nhầm lẫn giữa các phân khúc khách hàng, đặc biệt khi đặc trưng đầu vào chỉ được tổng hợp từ giao dịch.
+\item Mô hình Prophet chưa được chạy trong môi trường hiện tại vì thiếu thư viện.
+\item Báo cáo hiện tập trung vào toàn bộ hệ thống siêu thị, chưa đi sâu vào phân tích theo từng vùng hoặc từng nhóm sản phẩm.
+\end{itemize}
+
+\section{Hướng phát triển}
+
+Trong các bước tiếp theo, đề tài có thể mở rộng theo các hướng sau:
+\begin{itemize}
+\item Bổ sung dữ liệu \texttt{Profit}, \texttt{Discount} và \texttt{Quantity} để làm giàu feature và tăng chiều sâu phân tích kinh doanh.
+\item Phân tích luật kết hợp ở cấp sản phẩm cụ thể nếu mật độ giao dịch cho phép.
+\item Xây dựng thêm forecast theo từng khu vực hoặc từng nhóm sản phẩm chủ lực.
+\item Thử các mô hình phân lớp nâng cao hơn và bổ sung đặc trưng hành vi theo mùa vụ.
+\item Tự động hóa bước tổng hợp insight để hỗ trợ viết báo cáo và trình bày kết quả nhanh hơn.
+\end{itemize}

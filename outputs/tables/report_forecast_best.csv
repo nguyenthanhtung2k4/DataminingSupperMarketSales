@@ -1,5 +1,0 @@
-Model,Status,MAE,RMSE,sMAPE
-holt_winters,ok,13133.565,18419.983,18.725
-sarimax,ok,20260.64,25542.928,29.083
-naive,ok,31636.566,37862.674,45.63
-moving_average,ok,36185.879,42565.873,54.74

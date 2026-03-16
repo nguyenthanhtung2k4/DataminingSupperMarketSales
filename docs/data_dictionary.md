@@ -1,56 +1,54 @@
 # Data Dictionary
 
-Tai lieu nay duoc viet theo schema Superstore pho bien cua dataset `rohitsahoo/sales-forecasting`. Neu file `train.csv` thuc te khac schema nay, hay cap nhat `configs/params.yaml`.
+Tài liệu này mô tả schema thực tế của `data/raw/train.csv` đang được repo sử dụng.
 
-## Cot su dung truc tiep trong project
+## Cột chính đang có trong raw data
 
-| Cot | Kieu du lieu | Vai tro |
-| --- | --- | --- |
-| `Order ID` | string | Khoa don hang, dung de tao basket transactions |
-| `Order Date` | date | Moc thoi gian de forecast va tinh recency |
-| `Sales` | float | Gia tri doanh thu, target chinh cua forecasting |
-| `Category` | string | Nhom san pham cap cao |
-| `Sub-Category` | string | Nhom san pham chi tiet, item mac dinh cho association rules |
-| `Product Name` | string | Item chi tiet hon, co the dung khi tuning |
-| `Customer ID` | string | Khoa khach hang, uu tien dung cho clustering |
-| `Customer Name` | string | Du phong khi dataset khong co `Customer ID` |
-| `Quantity` | int / float | Thuoc tinh bo sung cho customer profiling |
-| `Discount` | float | Thuoc tinh bo sung cho customer profiling |
-| `Profit` | float | Thuoc tinh bo sung de tinh profit margin |
-
-## Cot bo sung thuong gap
-
-| Cot | Y nghia |
+| Cột | Vai trò |
 | --- | --- |
-| `Ship Date` | Ho tro phan tich lead time neu can mo rong |
-| `Ship Mode` | Thuoc tinh van chuyen |
-| `Segment` | Nhom khach hang |
-| `Country`, `City`, `State`, `Region` | Thuoc tinh dia ly |
-| `Product ID` | Ma san pham |
-| `Postal Code` | Thong tin dia ly chi tiet |
-| `Row ID` | Khoa dong du lieu, khong phai khoa business |
+| `Order ID` | Khóa hóa đơn để nhóm giỏ hàng |
+| `Order Date` | Mốc thời gian giao dịch |
+| `Ship Date` | Thời gian giao hàng |
+| `Customer ID` | Khóa khách hàng |
+| `Customer Name` | Tên khách hàng |
+| `Segment` | Nhãn phân khúc khách hàng, target của classification |
+| `Region` | Khu vực, dùng như feature phân loại bổ sung |
+| `Category` | Nhóm sản phẩm cấp cao |
+| `Sub-Category` | Nhóm sản phẩm con, item mặc định cho association |
+| `Product Name` | Tên sản phẩm |
+| `Sales` | Doanh thu |
 
-## Target theo tung nhanh
+## Đặc trưng được sinh thêm trong pipeline
 
-- `Association rules`:
-  - khong co target supervised
-  - dau vao la basket theo `Order ID`
-  - item mac dinh la `Sub-Category`
-- `Clustering`:
-  - khong co target supervised
-  - dau vao la feature tong hop theo khach hang
-- `Forecasting`:
-  - target la tong `Sales` sau khi tong hop theo tan suat `W-MON`
+### Customer-level features
 
-## Rui ro can luu y
+- `recency_days`
+- `order_count`
+- `total_sales`
+- `avg_order_value`
+- `unique_categories`
+- `unique_subcategories`
+- `active_days`
+- `active_months`
+- `sales_per_active_month`
+- `dominant_region`
 
-- thieu cot customer:
-  - fallback sang `Customer Name`
-- thieu `Profit`, `Discount`, `Quantity`:
-  - pipeline van chay, nhung mot so feature profile se it thong tin hon
-- leakage:
-  - tuyet doi khong shuffle khi danh gia forecasting
-- duplicate rows:
-  - can kiem tra truoc khi tao basket va tong hop doanh so
-- version schema khac:
-  - cap nhat `data.column_aliases` trong `configs/params.yaml`
+### Time-series features
+
+- `ds`
+- `y`
+- `year`
+- `month`
+- `quarter`
+- `lag_1`
+- `lag_2`
+- `lag_4`
+- `rolling_mean_4`
+
+## Các cột không có trong dataset hiện tại
+
+- `Profit`
+- `Discount`
+- `Quantity`
+
+Các cột này chỉ được giữ ở mức optional trong config để tương thích schema, nhưng pipeline chính thức của đề tài không dựa vào chúng nếu raw data không có thật.

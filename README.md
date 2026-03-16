@@ -1,137 +1,98 @@
 # DataminingSupperMarketSales
 
-Phân tích doanh số siêu thị theo hướng Data Mining với 3 nhánh chính:
+Repo nay tap trung vao phan code va ket qua chay cho De tai 1: phan tich doanh so sieu thi.
 
-- khai phá giỏ hàng để tìm cơ hội `cross-sell / up-sell`
-- phân cụm khách hàng để xây dựng chân dung mua sắm
-- dự báo doanh số theo thời gian để so sánh các mô hình forecast
+Pipeline gom 4 nhanh bat buoc:
 
-Dataset dự kiến: `train.csv` từ Kaggle `rohitsahoo/sales-forecasting`.
+- `Association Rules`
+- `Clustering`
+- `Classification`
+- `Forecasting`
 
-## Kết Quả Cuối Cùng
+Nhanh `Ban giam sat` khong ap dung cho de tai nay.
 
-Sau khi chạy xong, repo sẽ sinh ra:
+## Du lieu dau vao
 
-- dữ liệu đã xử lý trong `data/processed/`
-- bảng top `association rules`, bảng so sánh `clustering`, bảng so sánh `forecasting`
-- hình vẽ, bảng metric và các artifact trong `outputs/`
-- file log kết quả để so sánh các lần chạy:
-  - `outputs/reports/RESULTS_LOG.md`
-  - `outputs/reports/results_registry.csv`
-  - `outputs/logs/run_<timestamp>.json`
-  - `outputs/logs/best_runs_summary.md`
-- bộ notebook `01 -> 05` để trình bày pipeline và viết báo cáo
+Du lieu dang duoc doc tu:
 
-## Cấu Trúc Chính
+- `data/raw/train.csv`
 
-- `configs/params.yaml`: tham số và đường dẫn cần chỉnh trước khi chạy
-- `docs/`: hướng dẫn chi tiết, data dictionary, tuning guide, experiment policy
-- `notebooks/`: notebook báo cáo theo đúng thứ tự pipeline
-- `src/`: code chính của dự án
-- `scripts/`: script chạy pipeline, notebook và xuất kết quả
-- `outputs/`: artifacts, log, bảng metric, báo cáo
+Schema thuc te co cac cot chinh:
 
-## Cách Chạy Nhanh
+- `Order ID`, `Order Date`, `Ship Date`
+- `Customer ID`, `Customer Name`, `Segment`, `Region`
+- `Category`, `Sub-Category`, `Product Name`
+- `Sales`
 
-1. Tải dataset và đặt file vào `data/raw/train.csv`.
-2. Mở `configs/params.yaml` và kiểm tra lại tên cột nếu version dataset khác.
-3. Tạo virtual environment để tránh xung đột môi trường:
+Luu y: raw data hien tai khong co san `Profit`, `Discount`, `Quantity`, nen pipeline chinh khong dua vao cac cot nay.
 
-```bash
-python -m venv .venv
-```
+## Script chinh
 
-Nếu máy của bạn dùng `python3` thay vì `python`, hãy dùng:
+- `python scripts/run_pipeline.py`
+  - chay toan bo pipeline
+  - sinh `csv`, `png`, `log`
+- `python scripts/run_experiments.py --task all --preset report --apply-best`
+  - sweep tham so
+  - co the ghi cau hinh tot nhat vao `configs/params.yaml`
+- `python scripts/run_papermill.py`
+  - goi `run_pipeline.py` truoc
+  - sau do execute toan bo notebook
+  - ghi output truc tiep vao notebook trong `notebooks/`
 
-```bash
-python3 -m venv .venv
-```
+## Co can chay `run_papermill.py` de co ket qua khong?
 
-4. Kích hoạt virtual environment tùy theo hệ điều hành:
+- Khong.
+- `run_pipeline.py` da tao ra bang va hinh ket qua chinh.
+- `run_papermill.py` chi can khi ban muon notebook goc trong `notebooks/` duoc cap nhat output.
 
-Windows PowerShell:
+## Cach chay nhanh nhat
 
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.venv\Scripts\Activate.ps1
-```
-
-Windows CMD:
-
-```cmd
-.venv\Scripts\activate.bat
-```
-
-Linux / macOS / WSL / Git Bash:
+Kich hoat `.venv` truoc:
 
 ```bash
 source .venv/bin/activate
 ```
 
-Sau khi kích hoạt thành công, bạn sẽ thấy `(.venv)` ở đầu dòng lệnh.
-
-5. Cài thư viện:
-
-```bash
-python -m pip install -r requirements.txt
-```
-
-Nếu đang dùng `python3`, có thể dùng:
-
-```bash
-python3 -m pip install -r requirements.txt
-```
-
-6. Chạy pipeline bằng code:
+Chay pipeline:
 
 ```bash
 python scripts/run_pipeline.py
 ```
 
-Hoặc nếu máy bạn dùng `python3`:
+Neu muon tune tham so truoc:
 
 ```bash
-python3 scripts/run_pipeline.py
+python scripts/run_experiments.py --task all --preset report --apply-best
+python scripts/run_pipeline.py
 ```
 
-7. Hoặc chạy lại toàn bộ notebook:
+Neu muon chay het notebook:
 
 ```bash
 python scripts/run_papermill.py
 ```
 
-Hoặc:
+## Thu muc output
 
-```bash
-python3 scripts/run_papermill.py
-```
+- `data/processed/`: du lieu sau khi lam sach va tao dac trung
+- `outputs/tables/core/`: bang ket qua chinh
+- `outputs/tables/diagnostics/`: bang kiem tra chi tiet
+- `outputs/tables/experiments/`: bang sweep tham so
+- `outputs/figures/`: cac hinh sinh ra tu pipeline
+- `outputs/reports/`: notebook da execute va bang tong hop run
+- `outputs/logs/`: log moi lan chay
 
-8. Khi muốn thoát khỏi virtual environment:
+## Bao cao LaTeX
 
-```bash
-deactivate
-```
+Bao cao khong con duoc sinh tu dong tu code.
 
-## Trước Khi Chạy Cần Sửa Gì
+- Thu muc viet bao cao thu cong: `docs/Latext/`
+- Thu muc nay duoc tach khoi luong chay code
+- Pipeline khong tao `report.tex` nua
 
-- `configs/params.yaml`
-  - `paths.raw_data`
-  - `data.required_columns`
-  - `data.column_aliases`
-  - `association`
-  - `clustering`
-  - `forecasting`
+## Tai lieu nen doc
 
-Tài liệu chi tiết:
-
-- [project_focus.md](docs/project_focus.md)
-- [data_dictionary.md](docs/data_dictionary.md)
-- [run_guide.md](docs/run_guide.md)
-- [tuning_guide.md](docs/tuning_guide.md)
-- [experiment_policy.md](docs/experiment_policy.md)
-
-## Ghi Chú
-
-- Code chính nằm trong `src/`, notebook chỉ gọi hàm và trình bày kết quả.
-- Repo ưu tiên `reproducible` và so sánh phương pháp để phục vụ chấm điểm và viết báo cáo.
-- Nếu schema dataset khác với phiên bản mặc định, hãy cập nhật `configs/params.yaml` trước khi chạy.
+- `docs/run_guide.md`
+- `docs/project_focus.md`
+- `docs/data_dictionary.md`
+- `outputs/README.md`

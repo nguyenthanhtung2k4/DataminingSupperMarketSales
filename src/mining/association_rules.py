@@ -81,8 +81,8 @@ def mine_association_rules(
     association_cfg = config["association"]
     frequent = _frequent_itemsets(
         transactions=transactions,
-        min_support=association_cfg["min_support"],
-        max_length=association_cfg["max_length"],
+        min_support=float(association_cfg["min_support"]),
+        max_length=int(association_cfg["max_length"]),
     )
 
     itemsets_df = pd.DataFrame(
@@ -91,22 +91,29 @@ def mine_association_rules(
                 "itemset": ", ".join(itemset),
                 "length": len(itemset),
                 "support": round(support, 6),
+                "algorithm": association_cfg.get("algorithm", "apriori"),
+                "item_level": transactions_df["item_level"].iloc[0] if "item_level" in transactions_df.columns else "",
             }
             for itemset, support in frequent.items()
         ]
-    ).sort_values(["length", "support"], ascending=[True, False])
+    )
+    if not itemsets_df.empty:
+        itemsets_df = itemsets_df.sort_values(["length", "support"], ascending=[True, False]).reset_index(drop=True)
 
     rules = _generate_rules(
         frequent_itemsets=frequent,
-        min_confidence=association_cfg["min_confidence"],
-        min_lift=association_cfg["min_lift"],
+        min_confidence=float(association_cfg["min_confidence"]),
+        min_lift=float(association_cfg["min_lift"]),
     )
     rules_df = pd.DataFrame(rules)
     if not rules_df.empty:
+        rules_df["algorithm"] = association_cfg.get("algorithm", "apriori")
+        rules_df["item_level"] = (
+            transactions_df["item_level"].iloc[0] if "item_level" in transactions_df.columns else ""
+        )
         rules_df = rules_df.sort_values(
             ["lift", "confidence", "support"], ascending=[False, False, False]
         ).reset_index(drop=True)
-        rules_df = rules_df.head(association_cfg["top_n_rules"]).reset_index(drop=True)
+        rules_df = rules_df.head(int(association_cfg["top_n_rules"])).reset_index(drop=True)
 
-    return itemsets_df.reset_index(drop=True), rules_df
-
+    return itemsets_df, rules_df

@@ -30,6 +30,7 @@ def clean_sales_data(df: pd.DataFrame, config: dict[str, Any]) -> tuple[pd.DataF
     working = df.copy()
     raw_rows = len(working)
     dayfirst = bool(config.get("preprocessing", {}).get("date_dayfirst", False))
+    optional_columns = config.get("data", {}).get("optional_numeric_columns", [])
 
     if config["preprocessing"]["drop_duplicate_rows"]:
         working = working.drop_duplicates()
@@ -44,16 +45,18 @@ def clean_sales_data(df: pd.DataFrame, config: dict[str, Any]) -> tuple[pd.DataF
         working["Ship Date"] = pd.to_datetime(working["Ship Date"], errors="coerce", dayfirst=dayfirst)
 
     numeric_defaults = {"Sales": 0.0, "Quantity": 1.0, "Discount": 0.0, "Profit": 0.0}
-    for column in ["Sales", "Quantity", "Discount", "Profit"]:
+    for column in ["Sales", *optional_columns]:
         if column not in working.columns:
-            working[column] = numeric_defaults[column]
+            continue
         working[column] = pd.to_numeric(working[column], errors="coerce")
 
     if config["preprocessing"]["fill_numeric_missing_with_zero"]:
-        working["Sales"] = working["Sales"].fillna(0.0)
-        working["Discount"] = working["Discount"].fillna(0.0)
-        working["Profit"] = working["Profit"].fillna(0.0)
-        working["Quantity"] = working["Quantity"].fillna(1.0)
+        if "Sales" in working.columns:
+            working["Sales"] = working["Sales"].fillna(0.0)
+        for column in optional_columns:
+            if column not in working.columns:
+                continue
+            working[column] = working[column].fillna(numeric_defaults.get(column, 0.0))
 
     required_columns = config["data"]["required_columns"]
     missing_core_mask = working[required_columns].isna().any(axis=1)
@@ -83,6 +86,8 @@ def clean_sales_data(df: pd.DataFrame, config: dict[str, Any]) -> tuple[pd.DataF
         "invalid_date_rows": invalid_date_rows,
         "missing_core_rows": missing_core_rows,
         "final_rows": len(working),
+        "optional_columns_available": [column for column in optional_columns if column in working.columns],
+        "optional_columns_missing": [column for column in optional_columns if column not in working.columns],
     }
 
     return working.reset_index(drop=True), report

@@ -1,0 +1,64 @@
+\input{styles/settings}
+% Bìa báo cáo (SV sử dụng MS Word tạo bìa, sau đó export thành file PDF để ghép vào báo cáo
+
+\ctname{ĐỀ TÀI 1: PHÂN TÍCH DOANH SỐ SIÊU THỊ}
+\cstuname{%
+    \begin{tabular}[t]{l}
+        [Sinh viên 1] \\
+        [Sinh viên 2] \\
+        [Sinh viên 3]
+    \end{tabular}
+}
+\csCouncil{Công nghệ thông tin}
+\csSupervise{[Điền tên giảng viên hướng dẫn]}
+\cttime{2026}
+
+\thesislayout
+
+\begin{document}
+% Add cover page to the document (defined in 'styles/thesis.sty')
+\coverpage
+
+% The \frontmatter command makes the pages numbered in lowercase roman, and makes chapters not numbered
+\frontmatter
+
+\newpage
+
+% Lời cảm ơn
+\begin{acknowledgments}
+
+Chúng tôi xin gửi lời cảm ơn chân thành tới giảng viên hướng dẫn và các thầy cô trong học phần Dữ liệu lớn, Khai phá dữ liệu. Những kiến thức về khai phá dữ liệu, đánh giá mô hình và tổ chức pipeline thực nghiệm đã giúp nhóm hoàn thiện bài tập lớn này theo đúng định hướng môn học.
+
+\end{acknowledgments}
+
+% Tóm tắt báo cáo
+\begin{abstract}
+Báo cáo trình bày quá trình xây dựng một pipeline khai phá dữ liệu hoàn chỉnh cho bài toán phân tích doanh số siêu thị. Hệ thống được triển khai theo bốn nhánh chính của đề tài gồm luật kết hợp, phân cụm khách hàng, phân lớp phân khúc khách hàng và dự báo doanh số theo thời gian. Tất cả kết quả trong báo cáo đều được viết dựa trên artifact thực nghiệm đã sinh ra từ repo, bao gồm dữ liệu sau làm sạch, bảng kết quả, hình trực quan và log thực nghiệm.
+\end{abstract}	
+
+% Bảng mục lục
+\tableofcontents
+% Danh mục bảng
+\listoftables
+% Danh mục hình
+\listoffigures
+% Danh mục giải thuật
+\listofalgorithms
+
+\mainmatter
+\fancyhead{}  % Clears all page headers and footers
+\renewcommand{\footrulewidth}{0.4pt}
+\pagestyle{fancy} 
+\renewcommand{\chaptermark}[1]{\markboth{#1}{#1}}
+\fancyhead[R]{\chaptername\ \thechapter\ --\ \leftmark}
+
+\input{chapters/introduction}
+\input{chapters/document-contents}
+\input{chapters/conclusion}
+
+% Tài liệu tham khảo
+\bibliographystyle{plain} 
+\bibliography{refs}
+
+% Kết thúc
+\end{document}

@@ -13,12 +13,19 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.config import ensure_output_directories, load_params, resolve_path, save_params
+from src.config import (
+    cleanup_legacy_table_files,
+    ensure_output_directories,
+    load_params,
+    resolve_table_path,
+    save_params,
+)
 from src.data import clean_sales_data, load_raw_data
 from src.evaluation import rank_metrics_for_task, write_dataframe
-from src.features import build_basket_transactions, build_customer_features, build_weekly_sales
+from src.features import build_basket_transactions, build_customer_features, build_sales_time_series
 from src.mining import mine_association_rules, run_customer_clustering
-from src.models import run_forecasting_experiment
+from src.models import tune_classification_models
+from src.models.forecasting import run_forecasting_experiment
 
 
 def _prepare_context(config: dict[str, Any]) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -39,45 +46,45 @@ def _association_priority(row: dict[str, Any]) -> tuple[int, tuple[float, ...]]:
     return (readable, rank_metrics_for_task("association", row))
 
 
-def run_association_experiments(config: dict[str, Any]) -> tuple[dict[str, Any], Path]:
+def run_association_experiments(config: dict[str, Any]) -> tuple[dict[str, Any], str, Path]:
     cleaned_df, _ = _prepare_context(config)
-    transactions_df = build_basket_transactions(
-        cleaned_df,
-        item_level=config["preprocessing"]["basket_item_level"],
-    )
 
     summary_rows: list[dict[str, Any]] = []
     base_cfg = copy.deepcopy(config["association"])
     level2_candidates: list[dict[str, Any]] = []
 
-    for min_support, min_confidence, min_lift in itertools.product(
-        [0.01, 0.015, 0.02],
-        [0.02, 0.05, 0.10],
-        [1.00, 1.05],
-    ):
-        trial_cfg = copy.deepcopy(config)
-        trial_cfg["association"] = {
-            **base_cfg,
-            "min_support": min_support,
-            "min_confidence": min_confidence,
-            "min_lift": min_lift,
-            "max_length": 2,
-        }
-        _, rules_df = mine_association_rules(transactions_df, trial_cfg)
-        metrics = {
-            "min_support": min_support,
-            "min_confidence": min_confidence,
-            "min_lift": min_lift,
-            "max_length": 2,
-            "rule_count": int(len(rules_df)),
-            "max_lift": float(rules_df["lift"].max()) if not rules_df.empty else 0.0,
-            "avg_lift_top5": float(rules_df["lift"].head(5).mean()) if not rules_df.empty else 0.0,
-        }
-        summary_rows.append(metrics)
-        level2_candidates.append(metrics)
+    for item_level in ["Sub-Category", "Category"]:
+        transactions_df = build_basket_transactions(cleaned_df, item_level=item_level)
+        for min_support, min_confidence, min_lift in itertools.product(
+            [0.01, 0.015, 0.02],
+            [0.02, 0.05, 0.10],
+            [1.00, 1.05],
+        ):
+            trial_cfg = copy.deepcopy(config)
+            trial_cfg["association"] = {
+                **base_cfg,
+                "min_support": min_support,
+                "min_confidence": min_confidence,
+                "min_lift": min_lift,
+                "max_length": 2,
+            }
+            _, rules_df = mine_association_rules(transactions_df, trial_cfg)
+            metrics = {
+                "item_level": item_level,
+                "min_support": min_support,
+                "min_confidence": min_confidence,
+                "min_lift": min_lift,
+                "max_length": 2,
+                "rule_count": int(len(rules_df)),
+                "max_lift": float(rules_df["lift"].max()) if not rules_df.empty else 0.0,
+                "avg_lift_top5": float(rules_df["lift"].head(5).mean()) if not rules_df.empty else 0.0,
+            }
+            summary_rows.append(metrics)
+            level2_candidates.append(metrics)
 
     top_two = sorted(level2_candidates, key=_association_priority, reverse=True)[:2]
     for candidate in top_two:
+        transactions_df = build_basket_transactions(cleaned_df, item_level=candidate["item_level"])
         trial_cfg = copy.deepcopy(config)
         trial_cfg["association"] = {
             **base_cfg,
@@ -89,6 +96,7 @@ def run_association_experiments(config: dict[str, Any]) -> tuple[dict[str, Any],
         _, rules_df = mine_association_rules(transactions_df, trial_cfg)
         summary_rows.append(
             {
+                "item_level": candidate["item_level"],
                 "min_support": candidate["min_support"],
                 "min_confidence": candidate["min_confidence"],
                 "min_lift": candidate["min_lift"],
@@ -106,7 +114,7 @@ def run_association_experiments(config: dict[str, Any]) -> tuple[dict[str, Any],
     )
     output_path = write_dataframe(
         summary_df.round(6),
-        resolve_path(config["paths"]["tables_dir"], PROJECT_ROOT) / "experiment_association_report.csv",
+        resolve_table_path(config, "experiments", "experiment_association_report.csv", PROJECT_ROOT),
     )
 
     best_config = {
@@ -116,7 +124,7 @@ def run_association_experiments(config: dict[str, Any]) -> tuple[dict[str, Any],
         "min_lift": best_result["min_lift"],
         "max_length": int(best_result["max_length"]),
     }
-    return best_config, output_path
+    return best_config, str(best_result["item_level"]), output_path
 
 
 def run_clustering_experiments(config: dict[str, Any]) -> tuple[dict[str, Any], Path]:
@@ -132,8 +140,8 @@ def run_clustering_experiments(config: dict[str, Any]) -> tuple[dict[str, Any], 
             "unique_subcategories",
             "active_days",
         ],
-        "F3": ["recency_days", "order_count", "total_sales", "unique_subcategories", "total_quantity"],
-        "F4": ["recency_days", "total_sales", "avg_order_value", "active_days", "total_quantity"],
+        "F3": ["recency_days", "order_count", "total_sales", "unique_categories", "unique_subcategories"],
+        "F4": ["recency_days", "total_sales", "avg_order_value", "active_days", "unique_categories"],
     }
 
     summary_rows: list[dict[str, Any]] = []
@@ -142,31 +150,43 @@ def run_clustering_experiments(config: dict[str, Any]) -> tuple[dict[str, Any], 
         trial_cfg = copy.deepcopy(config)
         trial_cfg["clustering"] = {
             **base_cfg,
-            "features": features,
+            "features": [feature for feature in features if feature in customer_features.columns],
             "candidate_k": [2, 3, 4, 5, 6],
+            "algorithms": ["kmeans", "agglomerative", "dbscan"],
         }
         comparison_df, _, _ = run_customer_clustering(customer_features, trial_cfg)
         current_rows = comparison_df.copy()
         current_rows["feature_set"] = feature_set_name
-        current_rows["feature_list"] = ", ".join(features)
+        current_rows["feature_list"] = ", ".join(trial_cfg["clustering"]["features"])
         summary_rows.extend(current_rows.to_dict("records"))
 
     best_result = _select_best("clustering", summary_rows)
     summary_df = pd.DataFrame(summary_rows).sort_values(
-        ["silhouette", "davies_bouldin", "max_cluster_share"],
-        ascending=[False, True, True],
+        ["accepted_for_report", "silhouette", "davies_bouldin", "noise_share"],
+        ascending=[False, False, True, True],
     )
     output_path = write_dataframe(
         summary_df.round(6),
-        resolve_path(config["paths"]["tables_dir"], PROJECT_ROOT) / "experiment_clustering_report.csv",
+        resolve_table_path(config, "experiments", "experiment_clustering_report.csv", PROJECT_ROOT),
     )
 
     best_config = {
         **base_cfg,
         "features": feature_sets[best_result["feature_set"]],
         "candidate_k": [2, 3, 4, 5, 6],
+        "algorithms": ["kmeans", "agglomerative", "dbscan"],
     }
     return best_config, output_path
+
+
+def run_classification_experiments(config: dict[str, Any]) -> tuple[dict[str, Any], Path]:
+    _, customer_features = _prepare_context(config)
+    best_params_by_model, summary_df = tune_classification_models(customer_features, config)
+    output_path = write_dataframe(
+        summary_df,
+        resolve_table_path(config, "experiments", "experiment_classification_report.csv", PROJECT_ROOT),
+    )
+    return best_params_by_model, output_path
 
 
 def _forecast_trial(
@@ -194,7 +214,7 @@ def _forecast_trial(
             "seasonal_order": list(sarimax_seasonal_order),
         },
     }
-    ts_df = build_weekly_sales(
+    ts_df = build_sales_time_series(
         cleaned_df,
         frequency=frequency,
         target_column=trial_cfg["forecasting"]["target_column"],
@@ -244,13 +264,7 @@ def run_forecasting_experiments(config: dict[str, Any]) -> tuple[dict[str, Any],
 
     best_weekly = _select_best("forecasting", summary_rows)
     if best_weekly["sMAPE"] > 35:
-        monthly_trials = list(
-            itertools.product(
-                [3],
-                [(1, 1, 1), (1, 0, 1), (2, 1, 1)],
-            )
-        )
-        for moving_average_window, order in monthly_trials:
+        for moving_average_window, order in itertools.product([3], [(1, 1, 1), (1, 0, 1), (2, 1, 1)]):
             summary_rows.append(
                 _forecast_trial(
                     cleaned_df=cleaned_df,
@@ -271,7 +285,7 @@ def run_forecasting_experiments(config: dict[str, Any]) -> tuple[dict[str, Any],
     )
     output_path = write_dataframe(
         summary_df.round(6),
-        resolve_path(config["paths"]["tables_dir"], PROJECT_ROOT) / "experiment_forecasting_report.csv",
+        resolve_table_path(config, "experiments", "experiment_forecasting_report.csv", PROJECT_ROOT),
     )
 
     sarimax_order = [int(value.strip()) for value in best_result["sarimax_order"].strip("()").split(",")]
@@ -299,7 +313,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run controlled parameter sweeps for the final report.")
     parser.add_argument(
         "--task",
-        choices=["association", "clustering", "forecasting", "all"],
+        choices=["association", "clustering", "classification", "forecasting", "all"],
         default="all",
         help="Which task to tune.",
     )
@@ -320,19 +334,29 @@ def main() -> None:
     config = load_params(args.config_path)
     ensure_output_directories(config, PROJECT_ROOT)
 
-    selected_tasks = [args.task] if args.task != "all" else ["association", "clustering", "forecasting"]
+    selected_tasks = (
+        [args.task]
+        if args.task != "all"
+        else ["association", "clustering", "classification", "forecasting"]
+    )
     updated_config = copy.deepcopy(config)
     results: list[tuple[str, Path]] = []
 
     if "association" in selected_tasks:
-        best_association, output_path = run_association_experiments(updated_config)
+        best_association, best_item_level, output_path = run_association_experiments(updated_config)
         updated_config["association"] = best_association
+        updated_config["preprocessing"]["basket_item_level"] = best_item_level
         results.append(("association", output_path))
 
     if "clustering" in selected_tasks:
         best_clustering, output_path = run_clustering_experiments(updated_config)
         updated_config["clustering"] = best_clustering
         results.append(("clustering", output_path))
+
+    if "classification" in selected_tasks:
+        best_classification, output_path = run_classification_experiments(updated_config)
+        updated_config["classification"]["model_params"] = best_classification
+        results.append(("classification", output_path))
 
     if "forecasting" in selected_tasks:
         best_forecasting, output_path = run_forecasting_experiments(updated_config)
@@ -342,6 +366,8 @@ def main() -> None:
     if args.apply_best:
         config_path = save_params(updated_config, args.config_path)
         print(f"Updated config: {config_path}")
+
+    cleanup_legacy_table_files(updated_config, PROJECT_ROOT)
 
     for task, output_path in results:
         print(f"{task}: {output_path}")

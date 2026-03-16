@@ -1,47 +1,30 @@
 # Project Focus
 
-## De tai dang tap trung vao dau
+## Focus chính thức của Đề tài 1
 
-De tai nay khong chi lam mot bai toan du bao doanh so don le. Repo duoc xay quanh 3 cau hoi phan tich co gia tri bao cao:
+Repo này tập trung vào 4 câu hỏi chính:
 
-1. Nhom san pham nao thuong di cung nhau de de xuat cross-sell / up-sell.
-2. Khach hang co the chia thanh cac nhom hanh vi nao de phan tich gia tri va dac tinh mua sam.
-3. Doanh so theo tuan du bao tot nhat bang phuong phap nao khi so sanh baseline va model nang cao.
+1. Những nhóm sản phẩm nào thường được mua cùng nhau?
+2. Có thể chia khách hàng thành các cụm hành vi nào?
+3. Có thể dự đoán phân khúc khách hàng `Segment` từ lịch sử mua sắm hay không?
+4. Mô hình nào dự báo doanh số theo thời gian tốt nhất?
 
-## Vi sao chon 3 nhanh nay
+## Các nhánh được triển khai
 
-- `Association rules` dap ung phan `Data Mining core` trong rubric va giup rut ra tri thuc de hanh dong.
-- `Clustering` giup mo ta customer segments, bo sung mot nhanh mining co tinh giai thich manh.
-- `Forecasting` la nhanh model hoa co gia tri kinh doanh ro rang cho de tai doanh so.
+- `Association Rules`
+- `Customer Clustering`
+- `Customer Segment Classification`
+- `Sales Forecasting`
 
-## Nhanh nao la core, nhanh nao la baseline
+## Ngoài phạm vi
 
-- `Core mining`:
-  - association rules
-  - customer clustering
-- `Core modeling`:
-  - forecasting tren chuoi doanh so tong hop theo tuan
-- `Baselines cho forecasting`:
-  - naive forecast
-  - moving average
-- `Models nang cao cho forecasting`:
-  - Holt-Winters
-  - SARIMAX
+- `Semi-supervised learning`
+- phân tích lợi nhuận sâu, vì raw data hiện tại không có `Profit`
+- phân tích discount policy, vì raw data hiện tại không có `Discount`
 
-## Output hoc thuat cuoi cung
+## Tiêu chí đánh giá cuối cùng
 
-Project can tra loi duoc:
-
-- nhom mat hang nao nen ban kem
-- nhom khach hang nao co gia tri cao, mua da dang, hoac co nguy co roi bo
-- mo hinh forecast nao dat `MAE`, `RMSE`, `sMAPE` tot nhat
-- it nhat 5 insight co the bien thanh hanh dong kinh doanh
-
-## Output de nop bai
-
-- repo co cau truc chuan va chay lai duoc
-- notebook `01 -> 05`
-- bang ket qua trong `outputs/tables`
-- hinh ve trong `outputs/figures`
-- logs theo doi cac lan chay trong `outputs/reports` va `outputs/logs`
-- tai lieu `README` va `docs` de viet bao cao theo PDF
+- repo chạy lại được bằng script
+- kết quả có thể diễn giải cho báo cáo
+- mỗi nhánh đều có bảng metric và artifact rõ ràng
+- báo cáo LaTeX lấy số liệu trực tiếp từ `outputs/`

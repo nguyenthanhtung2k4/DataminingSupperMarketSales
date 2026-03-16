@@ -1,0 +1,5 @@
+cluster,customer_count,avg_sales,avg_order_value,recency_days,order_count,unique_categories,unique_subcategories,active_days,active_months,sales_per_active_month
+0,487,2741.321,404.364,83.146,6.945,3.0,8.314,1089.376,6.396,437.641
+2,135,1339.311,259.031,106.533,4.889,1.896,5.296,995.044,4.622,275.061
+3,106,1369.076,372.255,514.472,3.774,2.519,5.462,506.142,3.519,402.592
+1,65,9239.757,1432.119,138.092,7.385,2.954,9.215,1063.462,6.631,1545.487

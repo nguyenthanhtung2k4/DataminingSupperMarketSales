@@ -1,10 +1,8 @@
-# Source Code
+# Source Layout
 
-`src/` chua toan bo logic chinh cua project:
-
-- `data/`: load va cleaning
-- `features/`: tao transaction, customer features, time series
-- `mining/`: association rules va clustering
-- `models/`: forecasting
-- `evaluation/`: metric, report, experiment tracking
-- `visualization/`: ham ve dung chung
+- `data/`: đọc dữ liệu, validate schema, cleaning
+- `features/`: basket features, customer features, time-series features
+- `mining/`: association rules, clustering
+- `models/`: classification, forecasting
+- `evaluation/`: metrics, experiment tracking, report export
+- `visualization/`: figure cho báo cáo

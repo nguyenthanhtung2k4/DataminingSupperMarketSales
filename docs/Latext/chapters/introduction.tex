@@ -1,0 +1,69 @@
+\chapter{Giới thiệu}\label{chapter_intro}
+
+\section{Đặt vấn đề}
+
+Trong bối cảnh bán lẻ hiện đại, dữ liệu giao dịch không chỉ phản ánh doanh thu mà còn chứa thông tin về hành vi mua sắm, mức độ trung thành của khách hàng và quy luật biến động doanh số theo thời gian. Với bộ dữ liệu doanh số siêu thị, bài toán đặt ra không dừng lại ở mô tả số liệu mà cần khai thác được các mẫu hữu ích để hỗ trợ ra quyết định kinh doanh.
+
+Đề tài này tập trung xây dựng một pipeline khai phá dữ liệu có khả năng tái lập, bao quát đầy đủ các bước: thu thập dữ liệu, tiền xử lý, xây dựng đặc trưng, áp dụng thuật toán và đánh giá kết quả. Phạm vi triển khai bám theo đúng yêu cầu của Đề tài 1, gồm bốn nhánh: luật kết hợp, phân cụm, phân lớp và dự báo chuỗi thời gian.
+
+\section{Mục tiêu của đề tài}
+
+Các mục tiêu chính của đề tài gồm:
+\begin{itemize}
+\item Làm sạch và chuẩn hóa bộ dữ liệu giao dịch siêu thị để tạo đầu vào nhất quán cho toàn bộ pipeline.
+\item Khai phá các luật mua kèm nhằm hỗ trợ gợi ý combo sản phẩm và chiến lược cross-sell.
+\item Phân cụm khách hàng theo hành vi mua sắm để xác định các nhóm khách hàng có giá trị khác nhau.
+\item Xây dựng bài toán phân lớp để dự đoán phân khúc khách hàng dựa trên đặc trưng tổng hợp.
+\item Dự báo doanh số theo thời gian nhằm hỗ trợ lập kế hoạch bán hàng ngắn hạn.
+\end{itemize}
+
+\section{Mô tả và khám phá tập dữ liệu}
+
+Dữ liệu đầu vào được lấy từ file \texttt{data/raw/train.csv}. Bộ dữ liệu raw có 9{,}800 dòng và 18 cột, mô tả thông tin đơn hàng, khách hàng, khu vực, nhóm sản phẩm và doanh thu. Sau bước làm sạch và chuẩn hóa ngày tháng, toàn bộ 9{,}800 bản ghi hợp lệ được giữ lại để phục vụ thực nghiệm. Từ tập dữ liệu sau xử lý, hệ thống ghi nhận 4{,}922 đơn hàng, 793 khách hàng và tổng doanh thu đạt 2{,}261{,}536.78 USD trong giai đoạn từ ngày 2015-01-03 đến 2018-12-30.
+
+\begin{table}[H]
+\centering
+\caption{Tóm tắt bộ dữ liệu sử dụng trong thực nghiệm}
+\label{tab:dataset-summary}
+\begin{tabular}{p{6cm}p{7cm}}
+\toprule
+Thuộc tính & Giá trị \\
+\midrule
+Số dòng dữ liệu raw & 9{,}800 \\
+Số cột dữ liệu raw & 18 \\
+Số dòng sau làm sạch & 9{,}800 \\
+Số cột sau xử lý & 22 \\
+Số đơn hàng & 4{,}922 \\
+Số khách hàng & 793 \\
+Khoảng thời gian & 2015-01-03 đến 2018-12-30 \\
+Tổng doanh thu & 2{,}261{,}536.78 USD \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Trong quá trình làm sạch, hệ thống không phát hiện dòng trùng lặp hay dòng lỗi ngày tháng. Tuy nhiên, dữ liệu raw không có sẵn các cột \texttt{Quantity}, \texttt{Discount} và \texttt{Profit}. Vì vậy, báo cáo này chỉ khai thác các đặc trưng có thật trong dữ liệu, tránh đưa ra các kết luận vượt quá khả năng của tập dữ liệu.
+
+Xét theo doanh thu, các nhóm sản phẩm con nổi bật nhất là \texttt{Phones}, \texttt{Chairs}, \texttt{Storage}, \texttt{Tables} và \texttt{Binders}. Đây là cơ sở quan trọng để phân tích luật kết hợp và đánh giá động lực doanh thu của siêu thị.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{top_subcategories.png}
+\caption{Các nhóm sản phẩm con có doanh thu cao nhất}
+\label{fig:top-subcategories}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\textwidth]{weekly_sales.png}
+\caption{Biến động doanh số theo thời gian sau khi tổng hợp}
+\label{fig:weekly-sales}
+\end{figure}
+
+\section{Cấu trúc của báo cáo}
+
+Báo cáo được tổ chức thành ba chương chính:
+\begin{itemize}
+\item Chương \ref{chapter_intro}: trình bày bối cảnh bài toán, mục tiêu và mô tả dữ liệu.
+\item Chương \ref{chapter_overview}: trình bày pipeline khai phá dữ liệu, cấu trúc mã nguồn, thiết kế thực nghiệm và phân tích kết quả.
+\item Chương \ref{chapter_conclusion}: tổng hợp kết luận, hạn chế và hướng phát triển tiếp theo.
+\end{itemize}

@@ -37,7 +37,7 @@ He thong log duoc giu de:
 ## Quy uoc dat ten
 
 - pipeline run: `pipeline-YYYYMMDD-HHMMSS`
-- notebook executed: `executed_01_eda.ipynb`, ...
+- notebook sau khi chay `papermill`: ghi truc tiep vao `notebooks/*.ipynb`
 - log json: `run_YYYYMMDD_HHMMSS_<task>.json`
 
 ## Cach so sanh version

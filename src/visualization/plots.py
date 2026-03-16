@@ -51,13 +51,23 @@ def plot_top_categories(df: pd.DataFrame, output_path: str | Path, top_n: int = 
 
 
 def plot_cluster_profile(profile_df: pd.DataFrame, output_path: str | Path) -> Path:
-    melted = profile_df.melt(id_vars=["cluster"], var_name="metric", value_name="value")
+    metric_columns = [column for column in profile_df.columns if column != "cluster"]
+    melted = profile_df.melt(id_vars=["cluster"], value_vars=metric_columns, var_name="metric", value_name="value")
     plt.figure(figsize=(12, 6))
     sns.barplot(data=melted, x="metric", y="value", hue="cluster")
     plt.title("Cluster Profile Summary")
     plt.xticks(rotation=45, ha="right")
     plt.xlabel("Metric")
     plt.ylabel("Value")
+    return _save_current_figure(output_path)
+
+
+def plot_confusion_matrix(confusion_df: pd.DataFrame, output_path: str | Path) -> Path:
+    plt.figure(figsize=(7, 5))
+    sns.heatmap(confusion_df, annot=True, fmt="d", cmap="Blues")
+    plt.title("Classification Confusion Matrix")
+    plt.xlabel("Predicted")
+    plt.ylabel("Actual")
     return _save_current_figure(output_path)
 
 
@@ -72,4 +82,14 @@ def plot_forecast(prediction_df: pd.DataFrame, output_path: str | Path) -> Path:
     plt.xlabel("Date")
     plt.ylabel("Sales")
     plt.legend()
+    return _save_current_figure(output_path)
+
+
+def plot_forecast_residuals(residual_df: pd.DataFrame, output_path: str | Path) -> Path:
+    plt.figure(figsize=(12, 4))
+    plt.axhline(0.0, color="#222222", linewidth=1, linestyle="--")
+    plt.plot(residual_df["ds"], residual_df["residual"], color="#d62728", linewidth=2)
+    plt.title("Forecast Residuals")
+    plt.xlabel("Date")
+    plt.ylabel("Residual")
     return _save_current_figure(output_path)

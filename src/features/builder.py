@@ -4,13 +4,25 @@ import numpy as np
 import pandas as pd
 
 
+def _mode_or_first(series: pd.Series) -> str:
+    clean = series.dropna().astype(str).str.strip()
+    if clean.empty:
+        return ""
+    mode = clean.mode()
+    return mode.iloc[0] if not mode.empty else clean.iloc[0]
+
+
 def build_basket_transactions(df: pd.DataFrame, item_level: str = "Sub-Category") -> pd.DataFrame:
+    if item_level not in df.columns:
+        raise KeyError(f"Basket item level '{item_level}' was not found in the dataset.")
+
     transactions = (
         df.groupby("Order ID")[item_level]
-        .apply(lambda series: sorted(set(series.dropna().astype(str))))
+        .apply(lambda series: sorted(set(series.dropna().astype(str).str.strip())))
         .reset_index(name="items")
     )
     transactions["item_count"] = transactions["items"].apply(len)
+    transactions["item_level"] = item_level
     return transactions[transactions["item_count"] > 0].reset_index(drop=True)
 
 
@@ -25,15 +37,23 @@ def build_customer_features(df: pd.DataFrame) -> pd.DataFrame:
         .rename("avg_order_value")
     )
 
+    monthly_activity = (
+        df.groupby(["Customer Key", "Order Month"])
+        .size()
+        .groupby("Customer Key")
+        .size()
+        .rename("active_months")
+    )
+
     features = (
         df.groupby("Customer Key")
         .agg(
-            customer_name=("Customer Name", "first"),
+            customer_name=("Customer Name", _mode_or_first),
+            segment=("Segment", _mode_or_first),
+            dominant_region=("Region", _mode_or_first),
             order_count=("Order ID", "nunique"),
             total_sales=("Sales", "sum"),
-            total_profit=("Profit", "sum"),
-            avg_discount=("Discount", "mean"),
-            total_quantity=("Quantity", "sum"),
+            unique_categories=("Category", "nunique"),
             unique_subcategories=("Sub-Category", "nunique"),
             last_order_date=("Order Date", "max"),
             first_order_date=("Order Date", "min"),
@@ -41,19 +61,24 @@ def build_customer_features(df: pd.DataFrame) -> pd.DataFrame:
         .reset_index()
     )
     features = features.merge(order_value, on="Customer Key", how="left")
+    features = features.merge(monthly_activity, on="Customer Key", how="left")
+
     features["recency_days"] = (reference_date - features["last_order_date"]).dt.days
     features["active_days"] = (
         features["last_order_date"] - features["first_order_date"]
     ).dt.days.clip(lower=0)
-    features["profit_margin"] = np.where(
-        features["total_sales"] != 0,
-        features["total_profit"] / features["total_sales"],
-        0.0,
+    features["sales_per_active_month"] = np.where(
+        features["active_months"].fillna(0) > 0,
+        features["total_sales"] / features["active_months"].clip(lower=1),
+        features["total_sales"],
     )
+    features["avg_order_value"] = features["avg_order_value"].fillna(features["total_sales"])
+    features["active_months"] = features["active_months"].fillna(1).astype(int)
+
     return features.sort_values("total_sales", ascending=False).reset_index(drop=True)
 
 
-def build_weekly_sales(
+def build_sales_time_series(
     df: pd.DataFrame,
     frequency: str = "W-MON",
     target_column: str = "Sales",
@@ -72,6 +97,14 @@ def build_weekly_sales(
         .reset_index()
     )
     return add_time_features(aggregated)
+
+
+def build_weekly_sales(
+    df: pd.DataFrame,
+    frequency: str = "W-MON",
+    target_column: str = "Sales",
+) -> pd.DataFrame:
+    return build_sales_time_series(df, frequency=frequency, target_column=target_column)
 
 
 def add_time_features(ts_df: pd.DataFrame) -> pd.DataFrame:

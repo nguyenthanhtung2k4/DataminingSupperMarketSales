@@ -1,79 +1,73 @@
 # Run Guide
 
-## 1. Chuan bi dataset
+Huong dan nay chi tap trung vao phan chay code va sinh ket qua.
 
-- Tai dataset tu Kaggle.
-- Dat file vao:
+## 1. Kich hoat moi truong
+
+```bash
+source .venv/bin/activate
+```
+
+## 2. Kiem tra du lieu dau vao
+
+Dam bao file raw ton tai:
 
 ```text
 data/raw/train.csv
 ```
 
-- Neu ten file khac, sua `paths.raw_data` trong `configs/params.yaml`.
-
-## 2. Kiem tra schema
-
-Mo `configs/params.yaml` va xem cac muc:
-
-- `data.required_columns`
-- `data.column_aliases`
-- `data.preferred_customer_columns`
-
-Neu version dataset khac ten cot, sua lai alias truoc khi chay.
-
-## 3. Cai package
+## 3. Kiem tra nhanh schema
 
 ```bash
-pip install -r requirements.txt
+python scripts/run_pipeline.py --check-only
 ```
 
-## 4. Cach chay
-
-### Chay pipeline bang code
+## 4. Chay full pipeline
 
 ```bash
 python scripts/run_pipeline.py
 ```
 
-Dung khi muon sinh nhanh:
+Sau lenh nay, repo se co:
 
-- data processed
-- bang metric
-- hinh
-- log ket qua
+- `data/processed/*.csv`
+- `outputs/tables/core/*`
+- `outputs/tables/diagnostics/*`
+- `outputs/figures/*.png`
+- `outputs/logs/*`
+- `outputs/reports/RESULTS_LOG.md`
+- `outputs/reports/results_registry.csv`
 
-### Chay notebook bang papermill
+## 5. Neu muon tune tham so truoc
+
+```bash
+python scripts/run_experiments.py --task all --preset report --apply-best
+python scripts/run_pipeline.py
+```
+
+## 6. Neu muon execute tat ca notebook
 
 ```bash
 python scripts/run_papermill.py
 ```
 
-Dung khi muon:
+Lenh nay se:
 
-- co notebook executed de dua vao bao cao
-- tai tao toan bo ket qua theo thu tu `01 -> 05`
+- goi `run_pipeline.py` truoc
+- execute 5 notebook
+- ghi output truc tiep vao 5 file trong `notebooks/`
 
-## 5. Thu tu notebook
+## 7. Artifact can kiem tra sau khi chay
 
-1. `01_eda.ipynb`
-2. `02_preprocess_feature.ipynb`
-3. `03_mining.ipynb`
-4. `04_modeling_forecasting.ipynb`
-5. `05_evaluation_report.ipynb`
+- `outputs/tables/core/association_rules.csv`
+- `outputs/tables/core/clustering_comparison.csv`
+- `outputs/tables/core/classification_comparison.csv`
+- `outputs/tables/core/forecast_comparison.csv`
+- `outputs/figures/classification_confusion_matrix.png`
+- `outputs/figures/forecast_vs_actual.png`
+- `outputs/figures/forecast_residuals.png`
 
-## 6. File nao can sua neu muon ket qua tot hon
+## 8. Ghi chu ve bao cao
 
-- `configs/params.yaml`
-  - `association`
-  - `clustering`
-  - `forecasting`
-- `docs/tuning_guide.md`
-  - xem tung nhom tham so va dau hieu tot / xau
-
-## 7. Ket qua duoc sinh ra o dau
-
-- `data/processed/`: du lieu da lam sach va features
-- `outputs/tables/`: bang ket qua
-- `outputs/figures/`: hinh ve
-- `outputs/reports/`: log dang doc tay va notebook executed
-- `outputs/logs/`: json logs va tong hop best run
+- Code khong con sinh LaTeX report tu dong.
+- Neu viet bao cao, hay viet thu cong trong `docs/Latext/`.

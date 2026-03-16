@@ -1,52 +1,34 @@
 # Report Outline
 
-Khung nay bam sat muc `2.2 Noi dung bao cao` trong PDF.
+Ghi chu:
 
-## 1. Dat van de va phan tich yeu cau
+- Day chi la ghi chu cho viec viet bao cao thu cong sau nay.
+- Pipeline khong sinh bao cao LaTeX tu dong.
+- Neu viet bao cao, hay viet trong `docs/Latext/`.
 
-- boi canh kinh doanh cua bai toan doanh so sieu thi
-- muc tieu project
-- tieu chi thanh cong
-- mo ta dataset
-- data dictionary
-- EDA tong quan
+1. `Đặt vấn đề và phân tích yêu cầu`
+2. `Thiết kế giải pháp và quy trình khai phá dữ liệu`
+3. `Phân tích mã nguồn và chức năng`
+4. `Thử nghiệm và kết quả`
+5. `Thảo luận và so sánh`
+6. `Kết luận và hướng phát triển`
 
-## 2. Thiet ke giai phap va quy trinh khai pha
+## Bảng bắt buộc
 
-- pipeline tong quat `raw -> preprocess -> feature -> mining -> forecasting -> evaluation`
-- ly do chon association rules
-- ly do chon clustering
-- ly do chon forecasting
-- mo ta preprocessing va feature engineering
-
-## 3. Phan tich ma nguon va chuc nang
-
-- cau truc repo
-- vai tro cua `src/data`, `src/features`, `src/mining`, `src/models`, `src/evaluation`
-- vai tro cua `scripts`
-- vai tro cua notebook `01 -> 05`
-- he thong logs va experiment tracking
-
-## 4. Thu nghiem va ket qua
-
-- ket qua EDA va chat luong du lieu
+- tóm tắt dataset
 - top association rules
-- so sanh clustering
-- so sanh cac mo hinh forecasting
-- bang metric `MAE`, `RMSE`, `sMAPE`
+- so sánh clustering
+- cluster profile
+- so sánh classification
+- bảng chất lượng classification theo từng lớp
+- so sánh forecasting
+- bảng tham số cuối cùng
 
-## 5. Thao luan va so sanh
+## Hình bắt buộc
 
-- uu / nhuoc diem cua tung nhanh
-- tai sao phuong phap A tot hon B
-- tinh de giai thich cua ket qua
-- cac kho khan khi tuning
-
-## 6. Tong ket va huong phat trien
-
-- tong hop insight chinh
-- de xuat cai tien tiep theo
-- huong mo rong:
-  - forecast theo category / state
-  - item level association chi tiet hon
-  - dashboard hoac demo app
+- top sub-categories theo doanh thu
+- sales over time
+- cluster profile
+- confusion matrix
+- forecast vs actual
+- forecast residuals

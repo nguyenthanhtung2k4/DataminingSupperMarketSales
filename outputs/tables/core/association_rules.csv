@@ -1,0 +1,13 @@
+antecedent,consequent,antecedent_size,consequent_size,support,confidence,lift,algorithm,item_level
+"Binders, Paper",Storage,2,1,0.010565,0.194757,1.254701,apriori,Sub-Category
+Storage,"Binders, Paper",1,2,0.010565,0.068063,1.254701,apriori,Sub-Category
+"Binders, Paper",Phones,2,1,0.010768,0.198502,1.21672,apriori,Sub-Category
+Phones,"Binders, Paper",1,2,0.010768,0.066002,1.21672,apriori,Sub-Category
+"Paper, Phones",Binders,2,1,0.010768,0.313609,1.195651,apriori,Sub-Category
+Binders,"Paper, Phones",1,2,0.010768,0.041053,1.195651,apriori,Sub-Category
+"Binders, Phones",Paper,2,1,0.010768,0.271795,1.150279,apriori,Sub-Category
+Paper,"Binders, Phones",1,2,0.010768,0.045572,1.150279,apriori,Sub-Category
+"Paper, Storage",Binders,2,1,0.010565,0.298851,1.139382,apriori,Sub-Category
+Binders,"Paper, Storage",1,2,0.010565,0.040279,1.139382,apriori,Sub-Category
+Fasteners,Paper,1,1,0.011581,0.268868,1.137892,apriori,Sub-Category
+Paper,Fasteners,1,1,0.011581,0.049011,1.137892,apriori,Sub-Category

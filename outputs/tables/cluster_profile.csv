@@ -1,3 +1,0 @@
-cluster,customer_count,total_sales,avg_order_value,recency_days,order_count,unique_subcategories,total_quantity,active_days,avg_discount,profit_margin
-1,436,1627.029,371.395,199.982,4.528,5.773,8.106,894.005,0.0,0.0
-0,357,4347.765,567.264,87.373,8.258,9.594,17.552,1114.417,0.0,0.0

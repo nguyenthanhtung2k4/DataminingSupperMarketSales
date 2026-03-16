@@ -20,7 +20,8 @@
       "Sales",
       "Category",
       "Sub-Category",
-      "Product Name"
+      "Product Name",
+      "Segment"
     ],
     "preferred_customer_columns": [
       "Customer ID",
@@ -119,11 +120,12 @@
     "resample_frequency": "W-MON"
   },
   "association": {
+    "algorithm": "apriori",
     "min_support": 0.01,
     "min_confidence": 0.02,
     "min_lift": 1.0,
     "max_length": 3,
-    "top_n_rules": 10
+    "top_n_rules": 12
   },
   "clustering": {
     "candidate_k": [
@@ -135,21 +137,127 @@
     ],
     "features": [
       "recency_days",
-      "order_count",
       "total_sales",
-      "unique_subcategories",
-      "total_quantity"
+      "avg_order_value",
+      "active_days",
+      "unique_categories"
     ],
     "algorithms": [
       "kmeans",
-      "agglomerative"
-    ]
+      "agglomerative",
+      "dbscan"
+    ],
+    "dbscan": {
+      "eps_values": [
+        0.6,
+        0.8,
+        1.0,
+        1.2
+      ],
+      "min_samples_values": [
+        5,
+        8,
+        12
+      ]
+    }
+  },
+  "classification": {
+    "target_column": "segment",
+    "features": [
+      "recency_days",
+      "order_count",
+      "total_sales",
+      "avg_order_value",
+      "unique_categories",
+      "unique_subcategories",
+      "active_days",
+      "active_months",
+      "sales_per_active_month",
+      "dominant_region"
+    ],
+    "categorical_features": [
+      "dominant_region"
+    ],
+    "test_size": 0.25,
+    "model_params": {
+      "logistic_regression": {
+        "C": 10.0,
+        "class_weight": "balanced"
+      },
+      "decision_tree": {
+        "max_depth": 5,
+        "min_samples_leaf": 3,
+        "class_weight": "balanced"
+      },
+      "random_forest": {
+        "n_estimators": 100,
+        "max_depth": null,
+        "min_samples_leaf": 3,
+        "class_weight": "balanced"
+      }
+    },
+    "model_grid": {
+      "logistic_regression": {
+        "C": [
+          0.1,
+          1.0,
+          10.0
+        ],
+        "class_weight": [
+          null,
+          "balanced"
+        ]
+      },
+      "decision_tree": {
+        "max_depth": [
+          3,
+          5,
+          8,
+          null
+        ],
+        "min_samples_leaf": [
+          1,
+          3,
+          5
+        ],
+        "class_weight": [
+          null,
+          "balanced"
+        ]
+      },
+      "random_forest": {
+        "n_estimators": [
+          100,
+          200
+        ],
+        "max_depth": [
+          5,
+          8,
+          null
+        ],
+        "min_samples_leaf": [
+          1,
+          3
+        ],
+        "class_weight": [
+          null,
+          "balanced"
+        ]
+      }
+    }
   },
   "forecasting": {
     "frequency": "MS",
     "target_column": "Sales",
     "horizon": 6,
     "moving_average_window": 3,
+    "enabled_models": [
+      "naive",
+      "moving_average",
+      "holt_winters",
+      "sarimax",
+      "prophet"
+    ],
     "holt_winters": {
       "trend": "add",
       "seasonal": "add",
@@ -167,6 +275,12 @@
         0,
         12
       ]
+    },
+    "prophet": {
+      "seasonality_mode": "additive",
+      "yearly_seasonality": true,
+      "weekly_seasonality": false,
+      "daily_seasonality": false
     }
   }
 }

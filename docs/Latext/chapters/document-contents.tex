@@ -1,0 +1,214 @@
+\chapter{Triển khai quy trình khai phá dữ liệu}\label{chapter_overview}
+
+\section{Mô tả pipeline}
+
+Pipeline của đề tài được tổ chức theo trục:
+\[
+\text{Data Source} \rightarrow \text{Preprocessing} \rightarrow \text{Feature Engineering} \rightarrow \text{Modeling} \rightarrow \text{Evaluation}
+\]
+
+Cụ thể:
+\begin{itemize}
+\item \textbf{Data Source}: đọc dữ liệu giao dịch từ file \texttt{train.csv}.
+\item \textbf{Preprocessing}: chuẩn hóa kiểu dữ liệu, sửa lỗi parse ngày tháng theo định dạng ngày/tháng/năm và loại bỏ các bản ghi không hợp lệ.
+\item \textbf{Feature Engineering}: tạo basket transaction cho luật kết hợp, đặc trưng khách hàng cho phân cụm/phân lớp, và chuỗi thời gian doanh số cho forecasting.
+\item \textbf{Modeling}: triển khai bốn nhánh association rules, clustering, classification và forecasting.
+\item \textbf{Evaluation}: ghi log, so sánh metric, sinh bảng kết quả và hình trực quan.
+\end{itemize}
+
+Trong lần chạy cuối, cấu hình quan trọng được chốt như sau:
+\begin{itemize}
+\item Association: Apriori, \texttt{min\_support = 0.01}, \texttt{min\_confidence = 0.02}, \texttt{min\_lift = 1.0}, \texttt{max\_length = 3}.
+\item Clustering: so sánh KMeans, Agglomerative và DBSCAN trên 5 đặc trưng \texttt{recency\_days}, \texttt{total\_sales}, \texttt{avg\_order\_value}, \texttt{active\_days}, \texttt{unique\_categories}.
+\item Classification: target là \texttt{Segment}; ba mô hình so sánh gồm Logistic Regression, Decision Tree và Random Forest.
+\item Forecasting: chuỗi doanh số tổng hợp theo tháng (\texttt{MS}), horizon 6 kỳ, so sánh Naive, Moving Average, Holt-Winters, SARIMAX và Prophet.
+\end{itemize}
+
+\section{Phân tích mã nguồn và chức năng}
+
+Mã nguồn được tổ chức theo hướng module hóa để notebook chỉ đóng vai trò trình bày, còn logic chính nằm trong thư mục \texttt{src/}. Cấu trúc này giúp toàn bộ repo có thể chạy lại bằng script, đồng thời dễ kiểm soát và tái lập kết quả.
+
+\begin{itemize}
+\item \texttt{src/data}: đọc dữ liệu, kiểm tra schema và làm sạch dữ liệu.
+\item \texttt{src/features}: xây dựng giao dịch giỏ hàng, đặc trưng khách hàng và chuỗi thời gian doanh số.
+\item \texttt{src/mining}: cài đặt luật kết hợp và phân cụm.
+\item \texttt{src/models}: cài đặt phân lớp và dự báo chuỗi thời gian.
+\item \texttt{src/evaluation}: ghi log thực nghiệm, tính metric và xuất bảng CSV.
+\item \texttt{src/visualization}: sinh các hình phục vụ phân tích và báo cáo.
+\item \texttt{scripts/run\_pipeline.py}: chạy toàn bộ pipeline.
+\item \texttt{scripts/run\_experiments.py}: sweep tham số để chọn cấu hình tốt hơn.
+\item \texttt{scripts/run\_papermill.py}: chạy pipeline rồi execute toàn bộ notebook để cập nhật output trực tiếp trong notebook.
+\end{itemize}
+
+\section{Thiết kế thử nghiệm}
+
+\subsection{Luật kết hợp}
+
+Dữ liệu giỏ hàng được xây dựng bằng cách nhóm theo \texttt{Order ID} và biểu diễn mỗi giao dịch dưới dạng tập các \texttt{Sub-Category}. Thuật toán Apriori được sử dụng để khai thác tập phổ biến và sinh luật kết hợp. Bộ tham số cuối cùng được chọn nhằm cân bằng giữa số lượng luật đủ để diễn giải và giá trị \texttt{lift} đủ cao để có ý nghĩa kinh doanh.
+
+\begin{table}[H]
+\centering
+\caption{Top luật kết hợp nổi bật}
+\label{tab:association-rules}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{p{4.0cm}p{4.0cm}cccc}
+\toprule
+Vế trái & Vế phải & Support & Confidence & Lift & Mức item \\
+\midrule
+Binders, Paper & Storage & 0.0106 & 0.1948 & 1.2547 & Sub-Category \\
+Storage & Binders, Paper & 0.0106 & 0.0681 & 1.2547 & Sub-Category \\
+Binders, Paper & Phones & 0.0108 & 0.1985 & 1.2167 & Sub-Category \\
+Phones & Binders, Paper & 0.0108 & 0.0660 & 1.2167 & Sub-Category \\
+Paper, Phones & Binders & 0.0108 & 0.3136 & 1.1957 & Sub-Category \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Kết quả cho thấy các nhóm \texttt{Binders}, \texttt{Paper}, \texttt{Storage} và \texttt{Phones} thường xuất hiện cùng nhau trong cùng đơn hàng. Đây là tín hiệu phù hợp để xây dựng combo sản phẩm hoặc gợi ý bán kèm trong nhóm văn phòng phẩm và thiết bị làm việc.
+
+\subsection{Phân cụm khách hàng}
+
+Phân cụm được triển khai trên bộ đặc trưng khách hàng phản ánh giá trị mua sắm và mức độ hoạt động. Hệ thống so sánh ba hướng tiếp cận: KMeans, Agglomerative và DBSCAN. Việc lựa chọn mô hình không chỉ dựa trên metric nội tại mà còn xét đến tính cân bằng kích thước cụm và khả năng diễn giải business profile.
+
+\begin{table}[H]
+\centering
+\caption{So sánh các phương án phân cụm}
+\label{tab:clustering-comparison}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lcccccc}
+\toprule
+Thuật toán & $k$ & Silhouette & Davies-Bouldin & Tỉ lệ cụm nhỏ nhất & Tỉ lệ cụm lớn nhất & Chấp nhận \\
+\midrule
+KMeans & 4 & 0.3895 & 1.0110 & 0.0820 & 0.6141 & Có \\
+KMeans & 3 & 0.3541 & 1.1690 & 0.1501 & 0.6557 & Có \\
+KMeans & 2 & 0.3412 & 1.4284 & 0.3026 & 0.6974 & Có \\
+Agglomerative & 4 & 0.3150 & 1.1439 & 0.0605 & 0.5385 & Có \\
+Agglomerative & 3 & 0.2840 & 1.3083 & 0.2207 & 0.5385 & Có \\
+DBSCAN & 2 & 0.4531 & 0.7667 & 0.1388 & 0.8612 & Không \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Mặc dù DBSCAN có silhouette cao hơn trong một số cấu hình, mô hình này bị loại khỏi phương án báo cáo do tỉ lệ nhiễu lớn và phân bố cụm thiếu cân bằng. Phương án cuối cùng được chọn là KMeans với 4 cụm.
+
+\begin{table}[H]
+\centering
+\caption{Hồ sơ các cụm khách hàng cuối cùng}
+\label{tab:cluster-profile}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{ccccccc}
+\toprule
+Cụm & Số KH & Doanh thu TB & Giá trị đơn TB & Recency (ngày) & Đa dạng danh mục & Số ngày hoạt động \\
+\midrule
+0 & 487 & 2741.32 & 404.36 & 83.15 & 3.00 & 1089.38 \\
+2 & 135 & 1339.31 & 259.03 & 106.53 & 1.90 & 995.04 \\
+3 & 106 & 1369.08 & 372.25 & 514.47 & 2.52 & 506.14 \\
+1 & 65 & 9239.76 & 1432.12 & 138.09 & 2.95 & 1063.46 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Cụm 1 chỉ chiếm 65 khách hàng nhưng có doanh thu và giá trị đơn hàng trung bình cao vượt trội. Đây là nhóm khách hàng giá trị cao, phù hợp cho chiến lược giữ chân và chăm sóc cá nhân hóa. Ngược lại, cụm 3 có độ mới thấp hơn rõ rệt, phù hợp cho các chiến dịch tái kích hoạt.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\textwidth]{cluster_profile.png}
+\caption{Biểu đồ hồ sơ trung bình của các cụm khách hàng}
+\label{fig:cluster-profile}
+\end{figure}
+
+\subsection{Phân lớp phân khúc khách hàng}
+
+Bài toán phân lớp sử dụng nhãn \texttt{Segment} có sẵn trong dữ liệu để dự đoán phân khúc khách hàng. Bộ đặc trưng đầu vào là các thống kê tổng hợp ở mức khách hàng, bao gồm số đơn hàng, tổng doanh thu, giá trị đơn hàng trung bình, mức độ đa dạng danh mục và vùng mua sắm trội.
+
+\begin{table}[H]
+\centering
+\caption{So sánh các mô hình phân lớp}
+\label{tab:classification-comparison}
+\begin{tabular}{lccc}
+\toprule
+Mô hình & Accuracy & F1 Macro & ROC-AUC OvR \\
+\midrule
+Logistic Regression & 0.3869 & 0.3695 & 0.5481 \\
+Decision Tree & 0.4271 & 0.3465 & 0.5156 \\
+Random Forest & 0.4322 & 0.3278 & 0.4915 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Theo tiêu chí chính của đề tài là \texttt{F1 Macro}, Logistic Regression là mô hình tốt nhất. Mặc dù Random Forest có accuracy cao hơn một chút, Logistic Regression giữ được cân bằng tốt hơn giữa các lớp và đạt ROC-AUC OvR cao nhất.
+
+\begin{table}[H]
+\centering
+\caption{Chất lượng phân lớp theo từng phân khúc}
+\label{tab:classification-by-class}
+\begin{tabular}{lcccc}
+\toprule
+Phân khúc & Precision & Recall & F1-score & Support \\
+\midrule
+Consumer & 0.5833 & 0.4078 & 0.4800 & 103 \\
+Corporate & 0.2963 & 0.2712 & 0.2832 & 59 \\
+Home Office & 0.2603 & 0.5135 & 0.3455 & 37 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Ma trận nhầm lẫn cho thấy lớp \texttt{Consumer} vẫn bị nhầm khá nhiều sang \texttt{Corporate} và \texttt{Home Office}. Điều này phản ánh sự chồng lấn nhất định giữa hành vi mua sắm của các phân khúc khi chỉ sử dụng đặc trưng giao dịch tổng hợp.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.72\textwidth]{classification_confusion_matrix.png}
+\caption{Ma trận nhầm lẫn của mô hình phân lớp tốt nhất}
+\label{fig:classification-confusion}
+\end{figure}
+
+\subsection{Dự báo doanh số theo thời gian}
+
+Chuỗi doanh số được tổng hợp theo tháng với horizon kiểm tra là 6 kỳ cuối. Hệ thống so sánh hai baseline là Naive và Moving Average với các mô hình nâng cao Holt-Winters, SARIMAX và Prophet. Trong đó, Prophet được cấu hình là mô hình tùy chọn phụ thuộc môi trường cài đặt.
+
+\begin{table}[H]
+\centering
+\caption{So sánh các mô hình dự báo}
+\label{tab:forecast-comparison}
+\begin{tabular}{lccc}
+\toprule
+Mô hình & MAE & RMSE & sMAPE \\
+\midrule
+Holt-Winters & 13133.56 & 18419.98 & 18.7254 \\
+SARIMAX & 20260.64 & 25542.93 & 29.0828 \\
+Naive & 31636.57 & 37862.67 & 45.6297 \\
+Moving Average & 36185.88 & 42565.87 & 54.7397 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Kết quả cho thấy Holt-Winters là mô hình tốt nhất trong lần chạy cuối, đạt sai số thấp nhất trên cả ba metric. Prophet chưa được sử dụng trong môi trường hiện tại do chưa cài thư viện tương ứng, tuy nhiên pipeline vẫn giữ sẵn cấu hình để có thể mở rộng trong các lần thử nghiệm sau.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\textwidth]{forecast_vs_actual.png}
+\caption{So sánh dự báo và giá trị thực tế trên tập kiểm tra}
+\label{fig:forecast-vs-actual}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{forecast_residuals.png}
+\caption{Residual của mô hình Holt-Winters trên tập kiểm tra}
+\label{fig:forecast-residuals}
+\end{figure}
+
+\section{Thảo luận và so sánh}
+
+Nhìn tổng thể, kết quả thực nghiệm cho thấy chất lượng dữ liệu đầu vào có ảnh hưởng trực tiếp tới toàn bộ pipeline. Việc sửa đúng định dạng ngày tháng giúp hệ thống không làm mất bản ghi, đồng thời cải thiện đáng kể tính ổn định của chuỗi thời gian. Đây là điều kiện nền tảng để cả bốn nhánh cho ra kết quả có thể tin cậy.
+
+Ở nhánh luật kết hợp, giá trị lift chưa quá lớn nhưng đủ để chỉ ra các nhóm sản phẩm thường đi cùng nhau. Điều này phù hợp với bối cảnh bán lẻ, nơi giỏ hàng thường phân tán và khách hàng có nhiều hành vi mua đa dạng. Ở nhánh phân cụm, KMeans được chọn vì cho cân bằng tốt giữa metric và khả năng diễn giải, trong khi DBSCAN tuy có metric đẹp hơn ở một số cấu hình nhưng sinh quá nhiều nhiễu. Ở nhánh phân lớp, Logistic Regression là lựa chọn hợp lý hơn khi ưu tiên F1 Macro. Ở nhánh dự báo, Holt-Winters cho kết quả tốt nhất và đủ đơn giản để vận hành thực tế.
+
+Từ các kết quả trên, có thể rút ra một số insight hành động như sau:
+\begin{itemize}
+\item Đẩy mạnh gợi ý bán kèm giữa \texttt{Binders}, \texttt{Paper}, \texttt{Storage} và \texttt{Phones}.
+\item Tạo nhóm khách hàng giá trị cao từ cụm 1 để áp dụng ưu đãi giữ chân và chăm sóc cá nhân hóa.
+\item Thiết kế chiến dịch tái kích hoạt cho nhóm có recency cao nhưng vẫn còn doanh thu lịch sử.
+\item Sử dụng Logistic Regression làm baseline supervision để theo dõi dịch chuyển giữa các phân khúc \texttt{Segment}.
+\item Dùng Holt-Winters làm mô hình dự báo vận hành mặc định cho bài toán doanh số ngắn hạn.
+\end{itemize}
