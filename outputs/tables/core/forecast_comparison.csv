@@ -1,6 +1,6 @@
 model,status,MAE,RMSE,sMAPE
-holt_winters,ok,13133.564803,18419.983394,18.725375
-sarimax,ok,20260.639815,25542.927659,29.082786
+holt_winters,ok,13133.389642,18419.610063,18.72501
+sarimax,ok,20260.639786,25542.927647,29.082786
 naive,ok,31636.566033,37862.673859,45.629744
 moving_average,ok,36185.879167,42565.872804,54.739688
 prophet,unavailable: prophet is not installed in the current environment.,,,

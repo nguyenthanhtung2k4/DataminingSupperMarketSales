@@ -39,11 +39,11 @@ Luu y: raw data hien tai khong co san `Profit`, `Discount`, `Quantity`, nen pipe
   - sau do execute toan bo notebook
   - ghi output truc tiep vao notebook trong `notebooks/`
 
-## Co can chay `run_papermill.py` de co ket qua khong?
+<!-- ## Co can chay `run_papermill.py` de co ket qua khong?
 
 - Khong.
 - `run_pipeline.py` da tao ra bang va hinh ket qua chinh.
-- `run_papermill.py` chi can khi ban muon notebook goc trong `notebooks/` duoc cap nhat output.
+- `run_papermill.py` chi can khi ban muon notebook goc trong `notebooks/` duoc cap nhat output. -->
 
 ## Cach chay nhanh nhat
 
@@ -71,6 +71,19 @@ Neu muon chay het notebook:
 ```bash
 python scripts/run_papermill.py
 ```
+
+Neu muon mo trang web Streamlit de xem lai toan bo ket qua da chay:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+Trang web nay doc truc tiep tu:
+
+- `outputs/tables/`
+- `outputs/figures/`
+- `outputs/reports/`
+- `outputs/logs/`
 
 ## Thu muc output
 

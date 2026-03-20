@@ -1457,3 +1457,59 @@ File nay ghi theo dang doc tay de phuc vu viet bao cao.
 - output_paths: `{"comparison": "/hdd3/nckh-AIAgent/tungtt/Datamining/DataminingSupperMarketSales/outputs/tables/core/forecast_comparison.csv", "predictions": "/hdd3/nckh-AIAgent/tungtt/Datamining/DataminingSupperMarketSales/outputs/tables/diagnostics/forecast_predictions.csv", "residuals": "/hdd3/nckh-AIAgent/tungtt/Datamining/DataminingSupperMarketSales/outputs/tables/core/forecast_residuals.csv", "forecast_figure": "/hdd3/nckh-AIAgent/tungtt/Datamining/DataminingSupperMarketSales/outputs/figures/forecast_vs_actual.png", "forecast_residual_figure": "/hdd3/nckh-AIAgent/tungtt/Datamining/DataminingSupperMarketSales/outputs/figures/forecast_residuals.png", "sales_time_figure": "/hdd3/nckh-AIAgent/tungtt/Datamining/DataminingSupperMarketSales/outputs/figures/weekly_sales.png"}`
 - notes: So sánh baseline và mô hình forecast nâng cao theo đúng split thời gian.
 - conclusion: **chưa tốt hơn**
+
+## Kết quả 69
+
+- run_id: `association-20260320-224153`
+- run_time: `2026-03-20 22:41:53`
+- task: `association`
+- dataset_version: `train.csv|2129689B|2020-09-11 15:40:16`
+- code_version: `d4b120e`
+- split_strategy: `basket grouped by Order ID`
+- metrics: `{"rule_count": 12, "max_lift": 1.254701, "avg_lift_top5": 1.2276986}`
+- key_params: `{"algorithm": "apriori", "min_support": 0.01, "min_confidence": 0.02, "min_lift": 1.0, "max_length": 3, "top_n_rules": 12, "item_level": "Sub-Category"}`
+- output_paths: `{"itemsets": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\tables\\diagnostics\\association_itemsets.csv", "rules": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\tables\\core\\association_rules.csv", "top_categories_figure": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\figures\\top_subcategories.png"}`
+- notes: Luật kết hợp trên giỏ hàng theo hóa đơn.
+- conclusion: **tốt hơn**
+
+## Kết quả 70
+
+- run_id: `clustering-20260320-224203`
+- run_time: `2026-03-20 22:42:03`
+- task: `clustering`
+- dataset_version: `train.csv|2129689B|2020-09-11 15:40:16`
+- code_version: `d4b120e`
+- split_strategy: `customer-level aggregation from transactional data`
+- metrics: `{"silhouette": 0.38952090303089726, "davies_bouldin": 1.011043135413477, "best_k": 4, "accepted_for_report": true, "noise_share": 0.0}`
+- key_params: `{"features": ["recency_days", "total_sales", "avg_order_value", "active_days", "unique_categories"], "algorithms": ["kmeans", "agglomerative", "dbscan"], "candidate_k": [2, 3, 4, 5, 6], "dbscan": {"eps_values": [0.6, 0.8, 1.0, 1.2], "min_samples_values": [5, 8, 12]}, "best_algorithm": "kmeans"}`
+- output_paths: `{"comparison": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\tables\\core\\clustering_comparison.csv", "assignments": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\tables\\diagnostics\\cluster_assignments.csv", "profile": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\tables\\core\\cluster_profile.csv", "profile_figure": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\figures\\cluster_profile.png"}`
+- notes: So sánh KMeans, Agglomerative và DBSCAN trên đặc trưng khách hàng.
+- conclusion: **tốt hơn**
+
+## Kết quả 71
+
+- run_id: `classification-20260320-224204`
+- run_time: `2026-03-20 22:42:04`
+- task: `classification`
+- dataset_version: `train.csv|2129689B|2020-09-11 15:40:16`
+- code_version: `d4b120e`
+- split_strategy: `stratified train/test split at customer level`
+- metrics: `{"accuracy": 0.386935, "f1_macro": 0.369547, "roc_auc_ovr": 0.548107}`
+- key_params: `{"C": 10.0, "class_weight": "balanced"}`
+- output_paths: `{"comparison": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\tables\\core\\classification_comparison.csv", "predictions": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\tables\\diagnostics\\classification_predictions.csv", "confusion": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\tables\\core\\classification_confusion_matrix.csv", "class_report": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\tables\\core\\classification_class_report.csv", "confusion_figure": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\figures\\classification_confusion_matrix.png"}`
+- notes: Phân lớp phân khúc khách hàng với target Segment.
+- conclusion: **chưa có mốc so sánh**
+
+## Kết quả 72
+
+- run_id: `forecasting-20260320-224205`
+- run_time: `2026-03-20 22:42:05`
+- task: `forecasting`
+- dataset_version: `train.csv|2129689B|2020-09-11 15:40:16`
+- code_version: `d4b120e`
+- split_strategy: `time-based split with holdout horizon=6`
+- metrics: `{"MAE": 13133.389642, "RMSE": 18419.610063, "sMAPE": 18.72501}`
+- key_params: `{"frequency": "MS", "horizon": 6, "moving_average_window": 3, "holt_winters": {"trend": "add", "seasonal": "add", "seasonal_periods": 12}, "sarimax": {"order": [1, 1, 1], "seasonal_order": [1, 0, 0, 12]}, "enabled_models": ["naive", "moving_average", "holt_winters", "sarimax", "prophet"], "best_model": "holt_winters"}`
+- output_paths: `{"comparison": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\tables\\core\\forecast_comparison.csv", "predictions": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\tables\\diagnostics\\forecast_predictions.csv", "residuals": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\tables\\core\\forecast_residuals.csv", "forecast_figure": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\figures\\forecast_vs_actual.png", "forecast_residual_figure": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\figures\\forecast_residuals.png", "sales_time_figure": "D:\\CODE\\DNU_Data_Mining\\DataminingSupperMarketSales\\outputs\\figures\\weekly_sales.png"}`
+- notes: So sánh baseline và mô hình forecast nâng cao theo đúng split thời gian.
+- conclusion: **tốt hơn**
